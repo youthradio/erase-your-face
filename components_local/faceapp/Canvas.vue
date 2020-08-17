@@ -1,6 +1,15 @@
 <template>
   <div ref="container" class="canvas-root">
-    <MainUI class="front-ui" />
+    <BrushesComponent class="absolute top-0 left-0" />
+    <div class="absolute top-0 right-0">
+      <a
+        class="b white ma1 tc f4 no-underline grow"
+        href="#"
+        @click.prevent="setActionState('test-image')"
+      >
+        SUBMIT
+      </a>
+    </div>
     <canvas
       id="cameraElement"
       ref="canvas"
@@ -18,12 +27,12 @@
 
 <script>
 import { lambdaAppURL } from '../../post.config'
-import MainUI from './UiComponent.vue'
+import BrushesComponent from './BrushesComponent.vue'
 
 export default {
   name: 'Canvas',
   components: {
-    MainUI
+    BrushesComponent
   },
   props: {},
   data() {
@@ -121,6 +130,11 @@ export default {
     this.updateTargetImage()
   },
   methods: {
+    setActionState(state) {
+      this.$store.dispatch('setUIState', {
+        selectedAction: state
+      })
+    },
     dataURLtoBlob(dataurl) {
       const arr = dataurl.split(',')
       const mime = arr[0].match(/:(.*?);/)[1]
@@ -340,16 +354,12 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.front-ui {
-  position: absolute;
-  right: 0;
-}
 .canvas-root {
   position: relative;
 }
-canvas {
-  width: 100%;
-  height: auto;
-  // touch-action: none;
-}
+// canvas {
+//   width: 100%;
+//   height: auto;
+//   // touch-action: none;
+// }
 </style>

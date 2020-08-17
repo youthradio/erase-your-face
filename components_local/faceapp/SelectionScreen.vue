@@ -5,7 +5,7 @@
         v-for="image in referenceImages"
         :key="image.name"
         :class="[
-          'image-select-item',
+          'w-33',
           {
             selected:
               selectedReferenceImg && selectedReferenceImg.name === image.name
@@ -13,16 +13,12 @@
         ]"
       >
         <a tabindex="0" href="#" @click.prevent="setSelection(image)">
-          <img class="img-fluid" :src="require(`../../assets/${image.src}`)" />
+          <img class="db" :src="require(`../../assets/${image.src}`)" />
         </a>
       </div>
     </div>
-    <button @click="finishSelection()">Next</button>
   </div>
 </template>
-
-<!-- line 11 errors out on mount because there is no image to refer to, needs to be applied after load -->
-
 <script>
 export default {
   name: 'SelectionScreen',
@@ -54,9 +50,6 @@ export default {
         selectedReferenceImg: this.selectedReferenceImg
       })
       this.$store.dispatch('setProgressState', 'canvasDrawing')
-    },
-    finishSelection() {
-      this.timeline.imageSelect = true
     }
   }
 }
@@ -66,12 +59,6 @@ export default {
   display: flex;
   flex-direction: row;
 }
-.image-select-item {
-  // position: relative;
-  // flex: 2;
-  // margin: 0.4rem;
-}
-
 .selected {
   outline: 5px solid black;
   z-index: 1;
