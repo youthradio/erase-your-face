@@ -1,6 +1,6 @@
 module.exports = {
-  baseURL: process.env.BASE_URL_PRODUCTION || '/static-nuxt-template',
-  title: 'Static Template Title',
+  baseURL: process.env.BASE_URL_PRODUCTION || '/erase-your-face',
+  title: 'Erase Your Face',
   author: 'Static Author',
   publishDate: 'Oct. 2, 2019',
   location: 'Oakland, CA',
@@ -9,7 +9,7 @@ module.exports = {
   url: 'CANONICAL URL',
   featureImage:
     'https://interactive.yr.media/college-app-guide/images/college-guide-featurex1875.jpg',
-  featureImagePath: 'images/template-feature-image',
+  featureImagePath: 'images/feature-image',
   featureImageDescription: 'Woman looking at kiosk.',
   featureImageCaption: '(Photo: Andersen Ross Photography Inc/Getty Images)',
   wpPostSlug: 'north-carolina-vs-vaping-companies',
@@ -19,9 +19,11 @@ module.exports = {
   twitterHandler: '@itsyrmedia',
   docs: [
     {
-      name: 'Test doc',
-      id: '1OCn6AQNVkgJ_4jHLFQOwIxvCDaxvZ-7XnZLbHHL0bOQ'
+      name: 'Erase Your Face draft FINAL - backend data',
+      id: '1rRMPbN6Y7y04fmKlHf6lXIPkp1mx9c8FBPxeC3XlZYI'
     }
   ],
-  dataPath: 'data/data.json'
+  dataPath: 'data/data.json',
+  lambdaAppURL:
+    'https://53fj52a3ud.execute-api.us-west-2.amazonaws.com/latest/push'
 }
