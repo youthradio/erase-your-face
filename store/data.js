@@ -4,11 +4,11 @@ export default {
     image: 'icons/pencil.png',
     colors: [
       '#DC6460',
-      '#E88866',
+      // '#E88866',
       '#FADB70',
-      '#51B576',
+      // '#51B576',
       '#4976C5',
-      '#7966EE',
+      // '#7966EE',
       '#8148C8',
       '#000000',
       '#FFFFFF'

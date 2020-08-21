@@ -3,7 +3,7 @@
     <BrushesComponent class="absolute top-0 left-0" />
     <div class="absolute top-0 right-0">
       <a
-        class="b white ma1 tc f4 no-underline grow"
+        class="ma2 pa1 ba br-pill bw1 b--white b white ma1 tc f4 no-underline grow"
         href="#"
         @click.prevent="setActionState('test-image')"
       >

@@ -27,6 +27,7 @@ export const actions = {
   setUIState({ commit }, newstate) {
     commit('SET_UISTATE', newstate)
   },
+  // set current progress UI state
   setProgressState({ commit }, newstate) {
     commit('SET_PROGSTATE', newstate)
   },
@@ -41,7 +42,8 @@ export const mutations = {
     state.UIState.selectedAction = 'none'
     state.UIState.selectedColor = state.toolsData.colors[7]
     state.UIState.selectedStrokeWeight = state.toolsData.strokeWeight[3]
-    state.UIState.selectedReferenceImg = state.referenceImages[0]
+    state.UIState.selectedReferenceImg =
+      state.referenceImages[~~(Math.random() * state.referenceImages.length)] // set initial reference image randomly
     state.UIState.isDrawing = false
     state.progresss = 'imageSelection'
     state.testResult.loading = false

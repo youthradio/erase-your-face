@@ -1,7 +1,6 @@
 <template>
   <div>
-    <SelectionScreen />
-    <!-- <MainUI /> -->
+    <TargetSelectionComponent />
     <Canvas />
     <ResultScreen />
   </div>
@@ -9,15 +8,14 @@
 
 <script>
 import Canvas from './faceapp/Canvas.vue'
-import SelectionScreen from './faceapp/SelectionScreen.vue'
+import TargetSelectionComponent from './faceapp/TargetSelectionComponent.vue'
 import ResultScreen from './faceapp/ResultScreen.vue'
 
 export default {
   name: 'FaceApp',
   components: {
-    // MainUI,
     Canvas,
-    SelectionScreen,
+    TargetSelectionComponent,
     ResultScreen
   },
   computed: {},
@@ -27,4 +25,9 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.full-width {
+  margin-left: calc(-100vw / 2 + 100% / 2);
+  margin-right: calc(-100vw / 2 + 100% / 2);
+}
+</style>
