@@ -12,7 +12,7 @@
       ]"
     >
       <a tabindex="0" href="#" @click.prevent="setSelection(image)">
-        <img class="db w-100" :src="require(`../../assets/${image.src}`)" />
+        <img class="db w-100" :src="image.src" />
       </a>
     </div>
   </div>

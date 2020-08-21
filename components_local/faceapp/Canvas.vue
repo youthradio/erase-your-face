@@ -11,7 +11,6 @@
       </a>
     </div>
     <canvas
-      id="cameraElement"
       ref="canvas"
       tabindex="0"
       @touchstart.prevent="mouseEvent"
@@ -22,6 +21,7 @@
       @mouseup.prevent="mouseEvent"
       @mousemove.prevent="mouseEvent"
     ></canvas>
+    <canvas ref="canvastarget" class="canvas-target" tabindex="0"> </canvas>
   </div>
 </template>
 
@@ -46,10 +46,12 @@ export default {
       },
       penSet: false,
       main: { canvas: null, ctx: null },
+      target: { canvas: null, ctx: null },
       layer: { canvas: null, ctx: null },
       currRefImgBlob: null,
       currTargetImgBlob: null,
-      currTargetImg: null
+      currTargetImg: null,
+      currTargetImgBlobNew: null
     }
   },
   computed: {
@@ -64,7 +66,7 @@ export default {
     'UIState.selectedReferenceImg'() {
       this.clearCanvas()
       this.loadReferenceImage()
-      this.loadTargeImage()
+      this.loadTargetImage()
       this.updateTargetImage()
     },
     'UIState.selectedTool'(action) {
@@ -116,7 +118,8 @@ export default {
     })
     // main
     this.main.canvas = this.$refs.canvas
-    this.main.canvas.width = this.main.canvas.height = this.$refs.container.clientWidth
+    this.main.canvas.width = 512
+    this.main.canvas.height = 512
     this.main.ctx = this.main.canvas.getContext('2d')
     // layer
     this.layer.canvas = document.createElement('canvas')
@@ -126,10 +129,69 @@ export default {
     this.layer.ctx.lineWidth = 10
     this.layer.ctx.lineJoin = this.layer.ctx.lineCap = 'round'
     this.loadReferenceImage()
-    this.loadTargeImage()
+    this.loadTargetImage()
     this.updateTargetImage()
+    this.loadTargetCanvas()
   },
   methods: {
+    // load image , when ready, draw on contex, postion x,y with width and height , w,h
+    loadImage(url, ctx, x, y, w, h) {
+      return new Promise((resolve) => {
+        const img = new Image()
+        img.onload = () => {
+          resolve(img)
+        }
+        img.src = url
+      }).then((img) => {
+        ctx.drawImage(img, 0, 0, img.width, img.height, x, y, w, h)
+      })
+    },
+    loadTargetCanvas() {
+      const P_TOTAL = 1117
+      this.target.canvas = this.$refs.canvastarget
+      this.target.canvas.width = 1000
+      this.target.canvas.height = 300
+      this.target.ctx = this.target.canvas.getContext('2d')
+      const sidelen = 50
+
+      const tx = ~~(this.target.canvas.width / sidelen)
+      const ty = ~~(this.target.canvas.height / sidelen)
+      // random unique ids
+      const randomIds = new Set()
+      while (randomIds.size < tx * ty) {
+        randomIds.add(~~(1 + Math.random() * P_TOTAL))
+      }
+      const randomImages = [...randomIds]
+
+      //       const imgData = this.UIState.selectedReferenceImg.src
+      // return fetch(imgData)
+      //   .then((res) => res.blob())
+      //   .then((blob) => {
+      //     this.currRefImgBlob = blob
+      //   })
+
+      // random position for reference image
+      const rid = ~~(Math.random() * randomImages.length)
+      let i = 0
+      for (let x = 0; x < tx; x++) {
+        for (let y = 0; y < ty; y++) {
+          // when position matches random id, use reference image
+          const url =
+            i === rid
+              ? this.UIState.selectedReferenceImg.src
+              : `faces/${randomImages[i]}.jpg`
+          i++
+          this.loadImage(
+            url,
+            this.target.ctx,
+            x * sidelen,
+            y * sidelen,
+            sidelen,
+            sidelen
+          )
+        }
+      }
+    },
     setActionState(state) {
       this.$store.dispatch('setUIState', {
         selectedAction: state
@@ -146,42 +208,46 @@ export default {
       }
       return new Blob([u8arr], { type: mime })
     },
-    testImages() {
-      const targetImageURL = this.main.canvas.toDataURL('image/jpeg', 1.0)
+    async testImages() {
       this.$store.dispatch('setResultState', {
         loading: true
       })
-      return fetch(targetImageURL)
-        .then((res) => res.blob())
-        .then((targetBlob) => {
-          console.log(targetBlob)
-          const formData = new FormData()
+      const targetImageURL = this.main.canvas.toDataURL('image/jpeg', 0.8)
 
-          formData.append('referenceimage', this.currRefImgBlob, 'refimg.jpg')
-          formData.append('targetimage', targetBlob, 'targetimg.jpg')
-          return fetch(lambdaAppURL, {
-            method: 'POST',
-            body: formData,
-            header: {
-              'Content-Type': 'multipart/form-data'
-            }
-          })
-            .then((res) => res.json())
-            .then((result) => {
-              this.$store.dispatch('setResultState', {
-                loading: false,
-                result,
-                targetImg: targetBlob,
-                refImg: this.currRefImgBlob
-              })
-            })
-            .catch((error) => {
-              this.$store.dispatch('setResultState', {
-                loading: false,
-                error
-              })
-            })
+      const targetBlob = await fetch(targetImageURL).then((res) => res.blob())
+
+      // source blob is the grid with all image and reference
+      const sourceImageURL = this.target.canvas.toDataURL('image/jpeg', 0.8)
+      const sourceBlob = await fetch(sourceImageURL).then((res) => res.blob())
+      console.log(sourceBlob, targetBlob)
+      const formData = new FormData()
+
+      formData.append('referenceimage', targetBlob, 'refimg.jpg')
+      formData.append('targetimage', sourceBlob, 'targetimg.jpg')
+      console.log(lambdaAppURL)
+      try {
+        const result = await fetch(lambdaAppURL, {
+          method: 'POST',
+          body: formData,
+          header: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then((res) => res.json())
+
+        console.log('result', result)
+        this.$store.dispatch('setResultState', {
+          loading: false,
+          result,
+          targetImg: sourceBlob,
+          refImg: targetBlob
         })
+      } catch (error) {
+        console.log(error)
+        this.$store.dispatch('setResultState', {
+          loading: false,
+          error
+        })
+      }
     },
     rollBack() {
       if (!this.history.points.length) {
@@ -265,12 +331,16 @@ export default {
       ) {
         const rect = event.target.getBoundingClientRect()
         // const bodyRect = document.body.getBoundingClientRect();/
+
         const posx =
-          (event.pageX || event.touches[0].pageX) -
-          (rect.left + document.documentElement.scrollLeft)
+          ((event.pageX || event.touches[0].pageX) -
+            (rect.left + document.documentElement.scrollLeft)) /
+          rect.width
+
         const posy =
-          (event.pageY || event.touches[0].pageY) -
-          (rect.top + document.documentElement.scrollTop)
+          ((event.pageY || event.touches[0].pageY) -
+            (rect.top + document.documentElement.scrollTop)) /
+          rect.height
 
         // usint this.$set because vue is not reactivy for array updates
         if (this.history.points[this.historyPointer] === undefined) {
@@ -291,7 +361,9 @@ export default {
         this.$set(
           this.history.points,
           this.historyPointer,
-          currPoints.concat([[posx, posy]])
+          currPoints.concat([
+            [posx * this.main.canvas.width, posy * this.main.canvas.height]
+          ])
         )
         // console.log("DRAW", this.history.points);
         this.draw()
@@ -313,15 +385,15 @@ export default {
     },
     // load reference image from store and keep it as blob
     loadReferenceImage() {
-      const imgData = require(`../../assets/${this.UIState.selectedReferenceImg.src}`)
+      const imgData = this.UIState.selectedReferenceImg.src
       return fetch(imgData)
         .then((res) => res.blob())
         .then((blob) => {
           this.currRefImgBlob = blob
         })
     },
-    loadTargeImage() {
-      const imgData = require(`../../assets/${this.UIState.selectedReferenceImg.target}`)
+    loadTargetImage() {
+      const imgData = this.UIState.selectedReferenceImg.target
       return new Promise((resolve, reject) => {
         return fetch(imgData)
           .then((res) => res.blob())
@@ -336,7 +408,7 @@ export default {
     },
     // draw target image on canvas
     async updateTargetImage() {
-      this.currTargetImg = await this.loadTargeImage()
+      this.currTargetImg = await this.loadTargetImage()
       this.main.ctx.drawImage(
         this.currTargetImg,
         0,
@@ -356,6 +428,15 @@ export default {
 <style lang="scss" scoped>
 .canvas-root {
   position: relative;
+}
+canvas {
+  width: 100%;
+  height: auto;
+}
+.canvas-target {
+  min-width: 100vw;
+  margin-left: calc(-100vw / 2 + 100% / 2);
+  margin-right: calc(-100vw / 2 + 100% / 2);
 }
 // canvas {
 //   width: 100%;

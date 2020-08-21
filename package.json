@@ -14,7 +14,7 @@
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "worktree": "git checkout --orphan gh-pages && git reset --hard && git commit --allow-empty -m 'Init' && git checkout master && git worktree add _site gh-pages",
     "gh-pages": "yarn export && cd _site && git add . && git commit --amend --no-edit && git push  origin gh-pages --force",
-    "production" : "BASE_URL_PRODUCTION=/ yarn publish-ghpages && rm -rf _production/* && cp -R dist/ _production/"
+    "production": "BASE_URL_PRODUCTION=/ yarn publish-ghpages && rm -rf _production/* && cp -R dist/ _production/"
   },
   "dependencies": {
     "@nuxtjs/google-gtag": "^1.0.4",
