@@ -4,13 +4,11 @@ export const state = () => ({
   UIState: {
     selectedColor: null,
     selectedStrokeWeight: null,
-    selectedReferenceImg: null,
     selectedAction: null,
     isDrawing: null
   },
   progress: null,
   toolsData: null,
-  referenceImages: null,
   testResult: {
     loading: null,
     result: null,
@@ -38,13 +36,9 @@ export const actions = {
 export const mutations = {
   LOAD_STORE(state) {
     state.toolsData = Object.assign({}, data.toolsData)
-    state.referenceImages = data.referenceImages.slice()
     state.UIState.selectedAction = 'none'
-    state.UIState.selectedColor = state.toolsData.colors[7]
+    state.UIState.selectedColor = state.toolsData.colors[4]
     state.UIState.selectedStrokeWeight = state.toolsData.strokeWeight[3]
-    state.UIState.selectedReferenceImg =
-      state.referenceImages[~~(Math.random() * state.referenceImages.length)] // set initial reference image randomly
-    state.UIState.isDrawing = false
     state.progresss = 'imageSelection'
     state.testResult.loading = false
   },

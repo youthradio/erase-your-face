@@ -1,6 +1,5 @@
 <template>
   <div>
-    <TargetSelectionComponent />
     <Canvas />
     <ResultScreen />
   </div>
@@ -8,14 +7,12 @@
 
 <script>
 import Canvas from './faceapp/Canvas.vue'
-import TargetSelectionComponent from './faceapp/TargetSelectionComponent.vue'
 import ResultScreen from './faceapp/ResultScreen.vue'
 
 export default {
   name: 'FaceApp',
   components: {
     Canvas,
-    TargetSelectionComponent,
     ResultScreen
   },
   computed: {},

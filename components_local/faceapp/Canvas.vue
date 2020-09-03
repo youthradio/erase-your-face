@@ -1,9 +1,9 @@
 <template>
-  <div ref="container" class="canvas-root">
+  <div ref="container" class="relative">
     <BrushesComponent class="absolute top-0 left-0" />
     <div class="absolute top-0 right-0">
       <a
-        class="ma2 pa1 ba br-pill bw1 b--white b white ma1 tc f4 no-underline grow"
+        class="db pa1 ba br-pill bw1 b--white b white tc f4 no-underline grow"
         href="#"
         @click.prevent="setActionState('test-image')"
       >
@@ -21,7 +21,7 @@
       @mouseup.prevent="mouseEvent"
       @mousemove.prevent="mouseEvent"
     ></canvas>
-    <canvas ref="canvastarget" class="canvas-target" tabindex="0"> </canvas>
+    <canvas ref="canvastarget" class="canvas-target" tabindex="0"></canvas>
   </div>
 </template>
 
@@ -48,10 +48,10 @@ export default {
       main: { canvas: null, ctx: null },
       target: { canvas: null, ctx: null },
       layer: { canvas: null, ctx: null },
-      currRefImgBlob: null,
       currTargetImgBlob: null,
       currTargetImg: null,
-      currTargetImgBlobNew: null
+      currTargetImgBlobNew: null,
+      targetImageId: null
     }
   },
   computed: {
@@ -65,12 +65,8 @@ export default {
   watch: {
     'UIState.selectedReferenceImg'() {
       this.clearCanvas()
-      this.loadReferenceImage()
       this.loadTargetImage()
       this.updateTargetImage()
-    },
-    'UIState.selectedTool'(action) {
-      console.log(action)
     },
     'UIState.selectedAction'(action) {
       console.log(action)
@@ -85,29 +81,13 @@ export default {
           selectedAction: 'clear'
         })
       }
-    },
-    //     state.UIState.selectedAction = "none";
-    // state.UIState.selectedTool = state.toolsData[0];
-    // state.UIState.selectedReferenceImg = state.referenceImages[0];
-    // UIState: {
-    //   handler(val, oldVal) {
-    //     // // this.layer.ctx.strokeStyle = "#FF0000";
-    //     // // this.layer.ctx.fillStyle = "#FF0000";
-    //     // // this.layer.ctx.rect(10, 20, 150, 100);
-    //     // // this.layer.ctx.fill();
-
-    //     console.log(val, oldVal);
-    //     // this.clearCanvas();
-    //     // this.updateReferenceImage();
+    }
+    // history: {
+    //   handler() {
+    //     // console.log('POINTs')
     //   },
     //   deep: true
-    // },
-    history: {
-      handler() {
-        console.log('POINTs')
-      },
-      deep: true
-    }
+    // }
   },
   mounted() {
     document.addEventListener('mouseup', this.mouseEvent)
@@ -116,37 +96,26 @@ export default {
         this.rollBack()
       }
     })
-    // main
-    this.main.canvas = this.$refs.canvas
-    this.main.canvas.width = 512
-    this.main.canvas.height = 512
-    this.main.ctx = this.main.canvas.getContext('2d')
-    // layer
-    this.layer.canvas = document.createElement('canvas')
-    this.layer.canvas.width = this.layer.canvas.height = this.main.canvas.width
-    this.layer.ctx = this.layer.canvas.getContext('2d')
-
-    this.layer.ctx.lineWidth = 10
-    this.layer.ctx.lineJoin = this.layer.ctx.lineCap = 'round'
-    this.loadReferenceImage()
+    this.initCanvases()
     this.loadTargetImage()
     this.updateTargetImage()
-    this.loadTargetCanvas()
   },
   methods: {
-    // load image , when ready, draw on contex, postion x,y with width and height , w,h
-    loadImage(url, ctx, x, y, w, h) {
-      return new Promise((resolve) => {
-        const img = new Image()
-        img.onload = () => {
-          resolve(img)
-        }
-        img.src = url
-      }).then((img) => {
-        ctx.drawImage(img, 0, 0, img.width, img.height, x, y, w, h)
-      })
-    },
-    loadTargetCanvas() {
+    initCanvases() {
+      // background canvas
+      this.main.canvas = this.$refs.canvas
+      this.main.canvas.width = 512
+      this.main.canvas.height = 512
+      this.main.ctx = this.main.canvas.getContext('2d')
+
+      // foregound canvas
+      this.layer.canvas = document.createElement('canvas')
+      this.layer.canvas.width = this.layer.canvas.height = this.main.canvas.width
+      this.layer.ctx = this.layer.canvas.getContext('2d')
+      this.layer.ctx.lineWidth = 10
+      this.layer.ctx.lineJoin = this.layer.ctx.lineCap = 'round'
+
+      // testing  target canvas
       const P_TOTAL = 1117
       this.target.canvas = this.$refs.canvastarget
       this.target.canvas.width = 1000
@@ -163,23 +132,13 @@ export default {
       }
       const randomImages = [...randomIds]
 
-      //       const imgData = this.UIState.selectedReferenceImg.src
-      // return fetch(imgData)
-      //   .then((res) => res.blob())
-      //   .then((blob) => {
-      //     this.currRefImgBlob = blob
-      //   })
-
       // random position for reference image
-      const rid = ~~(Math.random() * randomImages.length)
+      this.targetImageId = randomImages[~~(Math.random() * randomImages.length)]
       let i = 0
       for (let x = 0; x < tx; x++) {
         for (let y = 0; y < ty; y++) {
           // when position matches random id, use reference image
-          const url =
-            i === rid
-              ? this.UIState.selectedReferenceImg.src
-              : `faces/${randomImages[i]}.jpg`
+          const url = `faces/${randomImages[i]}.jpg`
           i++
           this.loadImage(
             url,
@@ -192,6 +151,19 @@ export default {
         }
       }
     },
+    // load image , when ready, draw on contex, postion x,y with width and height , w,h
+    loadImage(url, ctx, x, y, w, h) {
+      return new Promise((resolve) => {
+        const img = new Image()
+        img.onload = () => {
+          resolve(img)
+        }
+        img.src = url
+      }).then((img) => {
+        ctx.drawImage(img, 0, 0, img.width, img.height, x, y, w, h)
+      })
+    },
+
     setActionState(state) {
       this.$store.dispatch('setUIState', {
         selectedAction: state
@@ -264,6 +236,7 @@ export default {
       this.history.points.pop()
       this.history.colors.pop()
       this.history.sizes.pop()
+      this.historyPointer--
       // this.$set(this.history, "points", );
 
       this.history.points.forEach((points, historyIndex) => {
@@ -342,7 +315,6 @@ export default {
             (rect.top + document.documentElement.scrollTop)) /
           rect.height
 
-        // usint this.$set because vue is not reactivy for array updates
         if (this.history.points[this.historyPointer] === undefined) {
           this.$set(this.history.points, this.historyPointer, [])
 
@@ -383,17 +355,8 @@ export default {
       this.layer.ctx.stroke()
       this.main.ctx.drawImage(this.layer.canvas, 0, 0)
     },
-    // load reference image from store and keep it as blob
-    loadReferenceImage() {
-      const imgData = this.UIState.selectedReferenceImg.src
-      return fetch(imgData)
-        .then((res) => res.blob())
-        .then((blob) => {
-          this.currRefImgBlob = blob
-        })
-    },
     loadTargetImage() {
-      const imgData = this.UIState.selectedReferenceImg.target
+      const imgData = `faces/${this.targetImageId}.jpg`
       return new Promise((resolve, reject) => {
         return fetch(imgData)
           .then((res) => res.blob())
@@ -426,10 +389,8 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.canvas-root {
-  position: relative;
-}
 canvas {
+  display: block;
   width: 100%;
   height: auto;
 }

@@ -14,22 +14,5 @@ export default {
       '#FFFFFF'
     ],
     strokeWeight: [2, 4, 6, 10, 20]
-  },
-  referenceImages: [
-    {
-      name: 'A',
-      src: 'references/kanye-a.jpeg',
-      target: 'references/kanye-b.jpeg'
-    },
-    {
-      name: 'B',
-      src: 'references/trump-a.jpeg',
-      target: 'references/trump-b.jpeg'
-    },
-    {
-      name: 'C',
-      src: 'references/zuck-a.jpeg',
-      target: 'references/zuck-b.jpeg'
-    }
-  ]
+  }
 }
