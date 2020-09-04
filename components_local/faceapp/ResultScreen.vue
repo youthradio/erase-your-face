@@ -9,7 +9,10 @@
         <canvas ref="refImgCanvas"></canvas>
       </div>
       <div class="w-60 ph1">
-        <h3 class="lh-title f5 f4-ns">Matching faces</h3>
+        <h3 class="lh-title f5 f4-ns">
+          {{ faceMatches.length > 0 ? faceMatches.length : 'No' }} Matching
+          faces
+        </h3>
         <div ref="faceMatches" class="flex justify-around flex-wrap"></div>
       </div>
     </div>
@@ -39,6 +42,9 @@ export default {
     },
     testResult() {
       return this.$store.state.testResult
+    },
+    faceMatches() {
+      return this.testResult.result.FaceMatches
     }
   },
   watch: {
