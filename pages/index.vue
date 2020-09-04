@@ -32,6 +32,14 @@
             />
           </div>
         </div>
+        <template v-for="i in articleData.interview.questions">
+          <details :key="i.question" class="question">
+            <summary class="pa2 bg-green  ba b--green bw2">
+              <h3 class="di lh-title fa5 fa4-ns">{{ i.question }}</h3></summary
+            >
+            <div class=" ba b--green bw2" v-html="i.response"></div>
+          </details>
+        </template>
       </article>
 
       <ShareContainer
@@ -92,5 +100,11 @@ export default {
 }
 .img-r {
   box-shadow: 1rem 1rem $green;
+}
+summary {
+  cursor: pointer;
+  &:focus {
+    outline: 1px dashed rgba($gray, 0.5);
+  }
 }
 </style>
