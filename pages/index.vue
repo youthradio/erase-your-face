@@ -17,14 +17,14 @@
           </div>
         </template>
         <div class="flex">
-          <div class="pa4">
+          <div class="pa2 pa4-ns">
             <img
               :src="articleData.interview.bookpicture"
               loading="lazy"
               class="db lazy-load img-l"
             />
           </div>
-          <div class="pa4">
+          <div class="pa2 pa4-ns">
             <img
               :src="articleData.interview.biopicture"
               loading="lazy"
@@ -32,14 +32,27 @@
             />
           </div>
         </div>
-        <template v-for="i in articleData.interview.questions">
-          <details :key="i.question" class="question">
-            <summary class="pa2 bg-green  ba b--green bw2">
-              <h3 class="di lh-title fa5 fa4-ns">{{ i.question }}</h3></summary
-            >
-            <div class=" ba b--green bw2" v-html="i.response"></div>
-          </details>
-        </template>
+        <div class="mv4">
+          <template v-for="i in articleData.interview.questions">
+            <!-- <div  class="mv3"> -->
+            <details :key="i.question" class="question mv3">
+              <summary class="dib pa2 bg-green ba b--green bw2">
+                <h3 class="di lh-title fa5 fa4-ns ">
+                  {{ i.question }}
+                </h3></summary
+              >
+              <div
+                class=" ba b--green bw2 lh-copy pa2"
+                v-html="i.response"
+              ></div>
+            </details>
+            <!-- </div> -->
+          </template>
+          <h3 class="roboto-mono green b">
+            Credits
+          </h3>
+          <div v-html="articleData.credits.text" />
+        </div>
       </article>
 
       <ShareContainer
@@ -105,6 +118,10 @@ summary {
   cursor: pointer;
   &:focus {
     outline: 1px dashed rgba($gray, 0.5);
+  }
+  &::-webkit-details-marker {
+    color: #fff;
+    // background-color: #000;
   }
 }
 </style>

@@ -1,7 +1,7 @@
 module.exports = {
   baseURL: process.env.BASE_URL_PRODUCTION || '/erase-your-face',
   title: 'Erase Your Face',
-  author: 'Static Author',
+  author: "YR Media's Interactive Team with Stanford D-School",
   publishDate: 'Oct. 2, 2019',
   location: 'Oakland, CA',
   description: 'SEO friendly Description',
