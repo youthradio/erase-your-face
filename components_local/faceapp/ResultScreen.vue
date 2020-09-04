@@ -1,19 +1,19 @@
 <template>
-  <div ref="container">
+  <div v-if="!isLoadingResult && !isFirstTime" ref="container">
     <h1 v-if="testResult.result">RESULT</h1>
     <h2 v-if="testResult.loading">LOADING</h2>
+    <div class="flex">
+      <div class="w-40 ph1">
+        <h3 class="lh-title f5 f4-ns">Reference face</h3>
 
-    <h3>Referece face</h3>
-    <canvas ref="refImgCanvas"></canvas>
-    <h3>Matching faces</h3>
-    <div ref="targetImg" class="flex"></div>
-    <h1 v-if="matchesSimilarity">
-      Similarity: {{ matchesSimilarity.toFixed(2) }}%
-    </h1>
+        <canvas ref="refImgCanvas"></canvas>
+      </div>
+      <div class="w-60 ph1">
+        <h3 class="lh-title f5 f4-ns">Matching faces</h3>
+        <div ref="faceMatches" class="flex justify-around flex-wrap"></div>
+      </div>
+    </div>
     <h3 v-if="testResult.error">{{ testResult.error }}</h3>
-    <h3 v-if="testResult.result">
-      {{ JSON.stringify(testResult.result, null, 2) }}
-    </h3>
   </div>
 </template>
 
@@ -23,6 +23,7 @@ export default {
   props: {},
   data() {
     return {
+      isFirstTime: true,
       result: {
         canvas: null,
         ctx: null
@@ -30,34 +31,20 @@ export default {
     }
   },
   computed: {
+    isLoadingResult() {
+      return this.UIState.isLoadingResult
+    },
     UIState() {
       return this.$store.state.UIState
     },
     testResult() {
       return this.$store.state.testResult
-    },
-    matchesSimilarity() {
-      if (
-        this.testResult.result &&
-        this.testResult.result.FaceMatches.length > 0
-      ) {
-        return this.testResult.result.FaceMatches[0].Similarity
-      }
-      return null
-    },
-    unmatchesSimilarity() {
-      if (
-        this.testResult.result &&
-        this.testResult.result.UnmatchedFaces.length > 0
-      ) {
-        return this.testResult.result.UnmatchedFaces[0].Confidence
-      }
-      return null
     }
   },
   watch: {
     'UIState.isLoadingResult'() {
-      if (!this.testResult.loading) {
+      if (!this.UIState.isLoadingResult) {
+        this.isFirstTime = false
         this.drawResult()
       }
     }
@@ -69,7 +56,7 @@ export default {
         this.loadImage(this.testResult.refImg),
         this.loadImage(this.testResult.targetImg)
       ])
-      console.log(targetImg)
+
       const refImgBox = this.testResult.result.SourceImageFace.BoundingBox
       const canvasRef = this.$refs.refImgCanvas
       const canvasRefctx = canvasRef.getContext('2d')
@@ -84,6 +71,32 @@ export default {
 
       canvasRefctx.drawImage(refImg, px, py, w, h, 0, 0, w, h)
 
+      while (this.$refs.faceMatches.firstChild) {
+        this.$refs.faceMatches.removeChild(this.$refs.faceMatches.firstChild)
+      }
+      this.testResult.result.FaceMatches.forEach((match) => {
+        const div = document.createElement('div')
+        div.className = 'ph2'
+        div.innerHTML = `<h3 class="lh-title f5">${match.Similarity.toFixed(
+          2
+        )}%</h3>`
+        const canvas = document.createElement('canvas')
+        const canvasCtx = canvas.getContext('2d')
+
+        const matchImgBox = match.Face.BoundingBox
+
+        const px = targetImg.width * matchImgBox.Left
+        const py = targetImg.height * matchImgBox.Top
+        const w = targetImg.width * matchImgBox.Width
+        const h = targetImg.height * matchImgBox.Height
+        canvas.width = w
+        canvas.height = h
+        canvas.style.width = '100%'
+        canvas.style.maxWidth = '60px'
+        canvasCtx.drawImage(targetImg, px, py, w, h, 0, 0, w, h)
+        div.appendChild(canvas)
+        this.$refs.faceMatches.appendChild(div)
+      })
       // imgs.forEach((img, i) => {
       //   let refImgBox = this.testResult.result.SourceImageFace.BoundingBox
       //   if (i > 0) {

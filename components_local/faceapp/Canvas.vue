@@ -1,32 +1,41 @@
 <template>
-  <div ref="container" class="relative">
-    <BrushesComponent class="absolute top-0 left-0" />
-    <div
-      class="absolute top-0 right-0"
-      :style="isDrawing ? { pointerEvents: 'none' } : { pointerEvents: 'all' }"
-    >
-      <a
-        :class="[
-          'db pa1 ba br-pill bw1  b  tc f4 no-underline b--white white',
-          !UIState.isLoadingResult ? 'grow' : 'o-50'
-        ]"
-        href="#"
-        @click.prevent="setActionState('submit-test')"
+  <div ref="container">
+    <div class="relative">
+      <BrushesComponent class="absolute top-0 left-0" />
+      <div
+        class="absolute bottom-1 right-1"
+        :style="
+          isDrawing ? { pointerEvents: 'none' } : { pointerEvents: 'all' }
+        "
       >
-        {{ !UIState.isLoadingResult ? 'SUBMIT' : 'LOADING' }}
-      </a>
+        <a
+          :class="[
+            'db pa1 ba br-pill bw1  b  tc f4 no-underline b--white white',
+            !UIState.isLoadingResult ? 'grow' : 'o-50'
+          ]"
+          href="#"
+          @click.prevent="setActionState('submit-test')"
+        >
+          {{ !UIState.isLoadingResult ? 'SUBMIT' : 'LOADING' }}
+        </a>
+      </div>
+
+      <canvas
+        ref="canvas"
+        tabindex="0"
+        @touchstart.prevent="mouseEvent"
+        @touchend.prevent="mouseEvent"
+        @touchmove.prevent="mouseEvent"
+        @mousedonw.prevent="mouseEvent"
+        @mousedown.prevent="mouseEvent"
+        @mouseup.prevent="mouseEvent"
+        @mousemove.prevent="mouseEvent"
+      ></canvas>
     </div>
-    <canvas
-      ref="canvas"
-      tabindex="0"
-      @touchstart.prevent="mouseEvent"
-      @touchend.prevent="mouseEvent"
-      @touchmove.prevent="mouseEvent"
-      @mousedonw.prevent="mouseEvent"
-      @mousedown.prevent="mouseEvent"
-      @mouseup.prevent="mouseEvent"
-      @mousemove.prevent="mouseEvent"
-    ></canvas>
+    <p>
+      Can Amazon Rekognition find your cover up face in here? Submit and check
+      it out!
+    </p>
     <canvas ref="canvastarget" class="canvas-target" tabindex="0"></canvas>
   </div>
 </template>
@@ -130,7 +139,7 @@ export default {
       this.target.canvas.width = 1000
       this.target.canvas.height = 300
       this.target.ctx = this.target.canvas.getContext('2d')
-      const sidelen = 50
+      const sidelen = 100
 
       const tx = ~~(this.target.canvas.width / sidelen)
       const ty = ~~(this.target.canvas.height / sidelen)
