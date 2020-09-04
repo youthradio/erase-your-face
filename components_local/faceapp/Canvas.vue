@@ -1,13 +1,19 @@
 <template>
   <div ref="container" class="relative">
     <BrushesComponent class="absolute top-0 left-0" />
-    <div class="absolute top-0 right-0">
+    <div
+      class="absolute top-0 right-0"
+      :style="isDrawing ? { pointerEvents: 'none' } : { pointerEvents: 'all' }"
+    >
       <a
-        class="db pa1 ba br-pill bw1 b--white b white tc f4 no-underline grow"
+        :class="[
+          'db pa1 ba br-pill bw1  b  tc f4 no-underline b--white white',
+          !UIState.isLoadingResult ? 'grow' : 'o-50'
+        ]"
         href="#"
-        @click.prevent="setActionState('test-image')"
+        @click.prevent="setActionState('submit-test')"
       >
-        SUBMIT
+        {{ !UIState.isLoadingResult ? 'SUBMIT' : 'LOADING' }}
       </a>
     </div>
     <canvas
@@ -37,6 +43,7 @@ export default {
   props: {},
   data() {
     return {
+      isReadytoDraw: false,
       isDrawing: false,
       historyPointer: -1,
       history: {
@@ -63,22 +70,23 @@ export default {
     }
   },
   watch: {
-    'UIState.selectedReferenceImg'() {
-      this.clearCanvas()
-      this.loadTargetImage()
-      this.updateTargetImage()
-    },
     'UIState.selectedAction'(action) {
       console.log(action)
       if (action === 'undo') {
         this.rollBack()
+        // clean action state so it triggers watch again
         this.$store.dispatch('setUIState', {
-          selectedAction: 'clear'
+          selectedAction: null
         })
-      } else if (action === 'test-image') {
-        this.testImages()
+      } else if (action === 'submit-test') {
+        // if it's not loading
+        if (!this.UIState.isLoadingResult) {
+          console.log('|TESTing')
+          this.testImages()
+          // clean action state so it triggers watch again
+        }
         this.$store.dispatch('setUIState', {
-          selectedAction: 'clear'
+          selectedAction: null
         })
       }
     }
@@ -99,6 +107,7 @@ export default {
     this.initCanvases()
     this.loadTargetImage()
     this.updateTargetImage()
+    this.isReadytoDraw = true
   },
   methods: {
     initCanvases() {
@@ -181,8 +190,8 @@ export default {
       return new Blob([u8arr], { type: mime })
     },
     async testImages() {
-      this.$store.dispatch('setResultState', {
-        loading: true
+      this.$store.dispatch('setUIState', {
+        isLoadingResult: true
       })
       const targetImageURL = this.main.canvas.toDataURL('image/jpeg', 0.8)
 
@@ -191,12 +200,10 @@ export default {
       // source blob is the grid with all image and reference
       const sourceImageURL = this.target.canvas.toDataURL('image/jpeg', 0.8)
       const sourceBlob = await fetch(sourceImageURL).then((res) => res.blob())
-      console.log(sourceBlob, targetBlob)
       const formData = new FormData()
 
       formData.append('referenceimage', targetBlob, 'refimg.jpg')
       formData.append('targetimage', sourceBlob, 'targetimg.jpg')
-      console.log(lambdaAppURL)
       try {
         const result = await fetch(lambdaAppURL, {
           method: 'POST',
@@ -207,6 +214,10 @@ export default {
         }).then((res) => res.json())
 
         console.log('result', result)
+        console.log(sourceBlob, targetBlob)
+        this.$store.dispatch('setUIState', {
+          isLoadingResult: false
+        })
         this.$store.dispatch('setResultState', {
           loading: false,
           result,
@@ -215,6 +226,9 @@ export default {
         })
       } catch (error) {
         console.log(error)
+        this.$store.dispatch('setUIState', {
+          isLoadingResult: false
+        })
         this.$store.dispatch('setResultState', {
           loading: false,
           error
@@ -285,6 +299,7 @@ export default {
     },
     mouseEvent(event) {
       event.preventDefault()
+      if (!this.isReadytoDraw) return
       const eventType = event.type
       if (eventType === 'mouseup' || eventType === 'touchend') {
         this.isDrawing = false

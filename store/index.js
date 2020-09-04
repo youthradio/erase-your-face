@@ -5,7 +5,8 @@ export const state = () => ({
     selectedColor: null,
     selectedStrokeWeight: null,
     selectedAction: null,
-    isDrawing: null
+    isDrawing: null,
+    isLoadingResult: false
   },
   progress: null,
   toolsData: null,

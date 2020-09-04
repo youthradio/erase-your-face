@@ -31,7 +31,7 @@
               />
             </svg>
           </a>
-          <a class="ma1 grow" href="#">
+          <!-- <a class="ma1 grow" href="#">
             <svg
               class="db w-100"
               width="20"
@@ -71,7 +71,7 @@
                 />
               </g>
             </svg>
-          </a>
+          </a> -->
           <a
             class="b white ma1 tc f7 no-underline grow"
             href="#"

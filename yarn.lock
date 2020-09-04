@@ -8546,6 +8546,11 @@ schema-utils@^2.0.0, schema-utils@^2.5.0, schema-utils@^2.6.1, schema-utils@^2.6
     ajv "^6.12.2"
     ajv-keywords "^3.4.1"
 
+scrollbooster@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/scrollbooster/-/scrollbooster-3.0.2.tgz#c1f0da4322321a165c70751b51e13f62177f26be"
+  integrity sha512-WZjvtSxCgCEbfc+9DmxfhuK6ACOqQr3jymniIp4I9Hh0mIEK1CKS4t+d7iPdeuILP5Q/we13h4YUHD0o+gPiRg==
+
 scrollmagic@^2.0.7:
   version "2.0.7"
   resolved "https://registry.yarnpkg.com/scrollmagic/-/scrollmagic-2.0.7.tgz#4139216f3849d226e38b3ef1e5dbbacf25190b35"

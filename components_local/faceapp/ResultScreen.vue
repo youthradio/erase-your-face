@@ -2,7 +2,11 @@
   <div ref="container">
     <h1 v-if="testResult.result">RESULT</h1>
     <h2 v-if="testResult.loading">LOADING</h2>
-    <canvas ref="canvas"></canvas>
+
+    <h3>Referece face</h3>
+    <canvas ref="refImgCanvas"></canvas>
+    <h3>Matching faces</h3>
+    <div ref="targetImg" class="flex"></div>
     <h1 v-if="matchesSimilarity">
       Similarity: {{ matchesSimilarity.toFixed(2) }}%
     </h1>
@@ -26,6 +30,9 @@ export default {
     }
   },
   computed: {
+    UIState() {
+      return this.$store.state.UIState
+    },
     testResult() {
       return this.$store.state.testResult
     },
@@ -49,60 +56,64 @@ export default {
     }
   },
   watch: {
-    'testResult.loading'() {
+    'UIState.isLoadingResult'() {
       if (!this.testResult.loading) {
         this.drawResult()
       }
     }
   },
-  mounted() {
-    this.result.canvas = this.$refs.canvas
-    this.result.canvas.width = this.$refs.container.clientWidth
-    this.result.canvas.height = this.$refs.container.clientWidth / 2
-    this.result.ctx = this.result.canvas.getContext('2d')
-  },
+  mounted() {},
   methods: {
     async drawResult() {
-      const imgs = await Promise.all([
+      const [refImg, targetImg] = await Promise.all([
         this.loadImage(this.testResult.refImg),
         this.loadImage(this.testResult.targetImg)
       ])
-      this.result.ctx.clearRect(
-        0,
-        0,
-        this.result.canvas.width,
-        this.result.canvas.height
-      )
-      imgs.forEach((img, i) => {
-        let faceImg = this.testResult.result.SourceImageFace
-        if (i > 0) {
-          if (this.testResult.result.FaceMatches.length > 0) {
-            faceImg = this.testResult.result.FaceMatches[0].Face
-          } else {
-            faceImg = this.testResult.result.UnmatchedFaces[0]
-          }
-        }
-        const refImgBox = faceImg.BoundingBox
-        const px = img.width * refImgBox.Left
-        const py = img.width * refImgBox.Top
-        const w = img.width * refImgBox.Width
-        const h = img.width * refImgBox.Height
-        const scaledw = w * (this.result.canvas.height / h)
-        const scaledh = this.result.canvas.height
-        this.result.ctx.drawImage(
-          img,
-          px,
-          py,
-          w,
-          h,
-          i <= 0 ? 0 : this.result.canvas.width - scaledw,
-          0,
-          // w / 4,
-          // h / 4
-          scaledw,
-          scaledh
-        )
-      })
+      console.log(targetImg)
+      const refImgBox = this.testResult.result.SourceImageFace.BoundingBox
+      const canvasRef = this.$refs.refImgCanvas
+      const canvasRefctx = canvasRef.getContext('2d')
+
+      const px = refImg.width * refImgBox.Left
+      const py = refImg.height * refImgBox.Top
+      const w = refImg.width * refImgBox.Width
+      const h = refImg.height * refImgBox.Height
+
+      canvasRef.width = w
+      canvasRef.height = h
+
+      canvasRefctx.drawImage(refImg, px, py, w, h, 0, 0, w, h)
+
+      // imgs.forEach((img, i) => {
+      //   let refImgBox = this.testResult.result.SourceImageFace.BoundingBox
+      //   if (i > 0) {
+      //     if (this.testResult.result.FaceMatches.length > 0) {
+      //       faceImg = this.testResult.result.FaceMatches[0].Face
+      //     } else {
+      //       faceImg = this.testResult.result.UnmatchedFaces[0]
+      //     }
+      //   }
+      //   const refImgBox = faceImg.BoundingBox
+      //   const px = img.width * refImgBox.Left
+      //   const py = img.width * refImgBox.Top
+      //   const w = img.width * refImgBox.Width
+      //   const h = img.width * refImgBox.Height
+      //   const scaledw = w * (this.result.canvas.height / h)
+      //   const scaledh = this.result.canvas.height
+      //   this.result.ctx.drawImage(
+      //     img,
+      //     px,
+      //     py,
+      //     w,
+      //     h,
+      //     i <= 0 ? 0 : this.result.canvas.width - scaledw,
+      //     0,
+      //     // w / 4,
+      //     // h / 4
+      //     scaledw,
+      //     scaledh
+      //   )
+      // })
     },
     loadImage(blob) {
       return new Promise((resolve, reject) => {
@@ -117,8 +128,8 @@ export default {
 </script>
 <style lang="scss" scoped>
 canvas {
+  display: block;
   width: 100%;
   height: auto;
-  // touch-action: none;
 }
 </style>

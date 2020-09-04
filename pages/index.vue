@@ -5,12 +5,12 @@
       <article class="lh-copy measure-wide center">
         <template v-for="section in articleData.sections">
           <div :key="section.text">
-            <div v-if="section.title === 'Interactive'">
-              <FaceApp />
-            </div>
-            <div v-else>
+            <div v-if="section.type === 'text'">
               <h3 class="roboto-mono green b">{{ section.title }}</h3>
               <div v-html="section.text"></div>
+            </div>
+            <div v-else>
+              <component :is="featuredComponent(section.title)" section.type />
             </div>
           </div>
         </template>
@@ -33,13 +33,15 @@ import HeaderContainer from '~/components/Header/HeaderContainer'
 import ShareContainer from '~/components/Custom/ShareContainer'
 import FooterContainer from '~/components/Footer/FooterContainer'
 import FaceApp from '~/components_local/FaceApp'
+import Infographic from '~/components_local/Infographic'
 
 export default {
   components: {
     HeaderContainer,
     ShareContainer,
     FooterContainer,
-    FaceApp
+    FaceApp,
+    Infographic
   },
   mixins: [CommonUtils],
   asyncData(ctx) {
@@ -51,10 +53,16 @@ export default {
   data() {
     return {}
   },
-  computed: {},
-  watch: {},
-  mounted() {},
-  methods: {}
+  methods: {
+    featuredComponent(title) {
+      if (title === 'Interactive') {
+        return 'FaceApp'
+      } else if (title === 'infographic') {
+        return 'Infographic'
+      }
+      return null
+    }
+  }
 }
 </script>
 <style lang="scss" scoped></style>
