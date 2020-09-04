@@ -165,7 +165,7 @@ export default {
       const P_TOTAL = 1117
       this.target.canvas = this.$refs.canvastarget
       this.target.canvas.width = 1000
-      this.target.canvas.height = 300
+      this.target.canvas.height = 600
       this.target.ctx = this.target.canvas.getContext('2d')
       const sidelen = 100
 
