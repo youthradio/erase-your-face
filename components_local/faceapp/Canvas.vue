@@ -2,6 +2,24 @@
   <div ref="container">
     <div class="relative">
       <BrushesComponent class="absolute top-0 left-0" />
+
+      <div
+        class="absolute bottom-1 left-1"
+        :style="
+          isDrawing ? { pointerEvents: 'none' } : { pointerEvents: 'all' }
+        "
+      >
+        <a
+          :class="[
+            'db pa1 ba br-pill bw1  b  tc f6 f4-ns no-underline b--white white',
+            !UIState.isLoadingResult ? 'grow' : 'o-50'
+          ]"
+          href="#"
+          @click.prevent="setActionState('another-face')"
+        >
+          {{ !UIState.isLoadingResult ? 'ANOTHER FACE' : 'LOADING' }}
+        </a>
+      </div>
       <div
         class="absolute bottom-1 right-1"
         :style="
@@ -10,7 +28,7 @@
       >
         <a
           :class="[
-            'db pa1 ba br-pill bw1  b  tc f4 no-underline b--white white',
+            'db pa1 ba br-pill bw1  b  tc f6 f4-ns no-underline b--white white',
             !UIState.isLoadingResult ? 'grow' : 'o-50'
           ]"
           href="#"
@@ -67,7 +85,8 @@ export default {
       currTargetImgBlob: null,
       currTargetImg: null,
       currTargetImgBlobNew: null,
-      targetImageId: null
+      targetImageId: null,
+      randomImagesIds: null
     }
   },
   computed: {
@@ -84,6 +103,16 @@ export default {
       if (action === 'undo') {
         this.rollBack()
         // clean action state so it triggers watch again
+        this.$store.dispatch('setUIState', {
+          selectedAction: null
+        })
+      } else if (action === 'another-face') {
+        // random position for reference image
+        this.targetImageId = this.randomImagesIds[
+          ~~(Math.random() * this.randomImagesIds.length)
+        ]
+        this.clearCanvas()
+        this.updateTargetImage()
         this.$store.dispatch('setUIState', {
           selectedAction: null
         })
@@ -114,7 +143,6 @@ export default {
       }
     })
     this.initCanvases()
-    this.loadTargetImage()
     this.updateTargetImage()
     this.isReadytoDraw = true
   },
@@ -148,15 +176,17 @@ export default {
       while (randomIds.size < tx * ty) {
         randomIds.add(~~(1 + Math.random() * P_TOTAL))
       }
-      const randomImages = [...randomIds]
+      this.randomImagesIds = [...randomIds]
 
       // random position for reference image
-      this.targetImageId = randomImages[~~(Math.random() * randomImages.length)]
+      this.targetImageId = this.randomImagesIds[
+        ~~(Math.random() * this.randomImagesIds.length)
+      ]
       let i = 0
       for (let x = 0; x < tx; x++) {
         for (let y = 0; y < ty; y++) {
           // when position matches random id, use reference image
-          const url = `faces/${randomImages[i]}.jpg`
+          const url = `faces/${this.randomImagesIds[i]}.jpg`
           i++
           this.loadImage(
             url,
