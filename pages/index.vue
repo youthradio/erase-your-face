@@ -6,7 +6,9 @@
         <template v-for="section in articleData.sections">
           <div :key="section.text">
             <div v-if="section.type === 'text'">
-              <h3 class="roboto-mono green b">{{ section.title }}</h3>
+              <h3 v-if="section.title !== 'null'" class="roboto-mono green b">
+                {{ section.title }}
+              </h3>
               <div v-html="section.text"></div>
             </div>
             <div v-else>
@@ -14,7 +16,24 @@
             </div>
           </div>
         </template>
+        <div class="flex">
+          <div class="pa4">
+            <img
+              :src="articleData.interview.bookpicture"
+              loading="lazy"
+              class="db lazy-load img-l"
+            />
+          </div>
+          <div class="pa4">
+            <img
+              :src="articleData.interview.biopicture"
+              loading="lazy"
+              class="db lazy-load img-r"
+            />
+          </div>
+        </div>
       </article>
+
       <ShareContainer
         :title="postData.title"
         :description="postData.summary"
@@ -65,4 +84,13 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+@import '~@/assets/css/variables';
+
+.img-l {
+  box-shadow: -1rem 1rem $green;
+}
+.img-r {
+  box-shadow: 1rem 1rem $green;
+}
+</style>
