@@ -54,7 +54,13 @@
       Can Amazon Rekognition find your cover up face in here? Submit and check
       it out!
     </p>
-    <canvas ref="canvastarget" class="canvas-target" tabindex="0"></canvas>
+    <div class="full-width">
+      <canvas
+        ref="canvastarget"
+        class="canvas-target center mw9"
+        tabindex="0"
+      ></canvas>
+    </div>
   </div>
 </template>
 
@@ -164,10 +170,10 @@ export default {
       // testing  target canvas
       const P_TOTAL = 1117
       this.target.canvas = this.$refs.canvastarget
-      this.target.canvas.width = 1000
-      this.target.canvas.height = 600
+      this.target.canvas.width = window.innerWidth > 800 ? 1200 : 800
+      this.target.canvas.height = window.innerWidth > 800 ? 400 : 400
       this.target.ctx = this.target.canvas.getContext('2d')
-      const sidelen = 100
+      const sidelen = window.innerWidth > 800 ? 80 : 100
 
       const tx = ~~(this.target.canvas.width / sidelen)
       const ty = ~~(this.target.canvas.height / sidelen)
@@ -448,14 +454,8 @@ canvas {
   width: 100%;
   height: auto;
 }
-.canvas-target {
-  min-width: 100vw;
+.full-width {
   margin-left: calc(-100vw / 2 + 100% / 2);
   margin-right: calc(-100vw / 2 + 100% / 2);
 }
-// canvas {
-//   width: 100%;
-//   height: auto;
-//   // touch-action: none;
-// }
 </style>

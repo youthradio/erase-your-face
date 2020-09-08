@@ -1,11 +1,12 @@
 <template>
-  <div ref="view" class="full-width">
+  <div ref="view" class="full-width overflow-hidden pointer">
     <svg
       ref="content"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       :height="windowWidth > 500 ? 500 : 350"
       viewBox="0 0 2265 522"
+      class="center mw9"
     >
       <defs />
       <path
@@ -526,11 +527,8 @@ export default {
 svg {
   display: block;
 }
-
 .full-width {
   margin-left: calc(-100vw / 2 + 100% / 2);
   margin-right: calc(-100vw / 2 + 100% / 2);
-  overflow: hidden;
-  cursor: pointer;
 }
 </style>

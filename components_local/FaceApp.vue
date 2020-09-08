@@ -22,9 +22,4 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-.full-width {
-  margin-left: calc(-100vw / 2 + 100% / 2);
-  margin-right: calc(-100vw / 2 + 100% / 2);
-}
-</style>
+<style scoped lang="scss"></style>
