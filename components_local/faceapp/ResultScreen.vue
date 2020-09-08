@@ -1,11 +1,10 @@
 <template>
   <div v-if="!isLoadingResult && !isFirstTime" ref="container">
-    <h1 v-if="testResult.result">RESULT</h1>
+    <h1 v-if="testResult.result" id="result" ref="result">RESULT</h1>
     <h2 v-if="testResult.loading">LOADING</h2>
     <div class="flex">
       <div class="w-40 ph1">
         <h3 class="lh-title f5 f4-ns">Reference face</h3>
-
         <canvas ref="refImgCanvas"></canvas>
       </div>
       <div class="w-60 ph1">
@@ -48,10 +47,11 @@ export default {
     }
   },
   watch: {
-    'UIState.isLoadingResult'() {
+    async 'UIState.isLoadingResult'() {
       if (!this.UIState.isLoadingResult) {
         this.isFirstTime = false
-        this.drawResult()
+        await this.drawResult()
+        this.$refs.container.scrollIntoView({ behavior: 'smooth' })
       }
     }
   },
@@ -150,5 +150,12 @@ canvas {
   display: block;
   width: 100%;
   height: auto;
+}
+[id]::before {
+  content: '';
+  display: block;
+  height: 69px;
+  margin-top: -69px;
+  visibility: hidden;
 }
 </style>

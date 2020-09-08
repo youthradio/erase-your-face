@@ -77,7 +77,6 @@ export default {
   data() {
     return {
       isReadytoDraw: false,
-      isDrawing: false,
       historyPointer: -1,
       history: {
         points: [],
@@ -101,6 +100,12 @@ export default {
     },
     UIState() {
       return this.$store.state.UIState
+    },
+    isLoadingResult() {
+      return this.UIState.isLoadingResult
+    },
+    isDrawing() {
+      return this.UIState.isDrawing
     }
   },
   watch: {
@@ -124,7 +129,7 @@ export default {
         })
       } else if (action === 'submit-test') {
         // if it's not loading
-        if (!this.UIState.isLoadingResult) {
+        if (!this.isLoadingResult) {
           console.log('|TESTing')
           this.testImages()
           // clean action state so it triggers watch again
@@ -344,16 +349,14 @@ export default {
     },
     mouseEvent(event) {
       event.preventDefault()
-      if (!this.isReadytoDraw) return
+      if (!this.isReadytoDraw || this.isLoadingResult) return
       const eventType = event.type
       if (eventType === 'mouseup' || eventType === 'touchend') {
-        this.isDrawing = false
         this.$store.dispatch('setUIState', {
           isDrawing: false
         })
       } else if (eventType === 'mousedown' || eventType === 'touchstart') {
         this.historyPointer++
-        this.isDrawing = true
         this.$store.dispatch('setUIState', {
           isDrawing: true
         })
