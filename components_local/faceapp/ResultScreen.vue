@@ -40,10 +40,16 @@ export default {
       return this.$store.state.UIState
     },
     testResult() {
-      return this.$store.state.testResult
+      if (this.$store.state.testResult) {
+        return this.$store.state.testResult
+      }
+      return null
     },
     faceMatches() {
-      return this.testResult.result.FaceMatches
+      if (this.testResult.result) {
+        return this.testResult.result.FaceMatches
+      }
+      return []
     }
   },
   watch: {
@@ -80,7 +86,7 @@ export default {
       while (this.$refs.faceMatches.firstChild) {
         this.$refs.faceMatches.removeChild(this.$refs.faceMatches.firstChild)
       }
-      this.testResult.result.FaceMatches.forEach((match) => {
+      this.faceMatches.forEach((match) => {
         const div = document.createElement('div')
         div.className = 'ph2'
         div.innerHTML = `<h3 class="lh-title f5">${match.Similarity.toFixed(

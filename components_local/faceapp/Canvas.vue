@@ -54,12 +54,39 @@
       Can Amazon Rekognition find your cover up face in here? Submit and check
       it out!
     </p>
-    <div class="full-width">
+    <div class="full-width relative">
       <canvas
         ref="canvastarget"
-        class="canvas-target center mw9"
+        class="canvas-target center mw9 relative"
         tabindex="0"
       ></canvas>
+      <div
+        v-if="faceMatches.length || umatchedFaces.length"
+        class="absolute w-100 h-100 top-0 left-0"
+      >
+        <div
+          v-for="(res, i) in faceMatches"
+          :key="`facematche-${i}`"
+          class="face bg-green"
+          :style="{
+            left: `${res.Face.BoundingBox.Left * 100}%`,
+            top: `${res.Face.BoundingBox.Top * 100}%`,
+            width: `${res.Face.BoundingBox.Width * 100}%`,
+            height: `${res.Face.BoundingBox.Height * 100}%`
+          }"
+        ></div>
+        <div
+          v-for="(res, i) in umatchedFaces"
+          :key="`faceunmatche-${i}`"
+          class="face bg-red"
+          :style="{
+            left: `${res.BoundingBox.Left * 100}%`,
+            top: `${res.BoundingBox.Top * 100}%`,
+            width: `${res.BoundingBox.Width * 100}%`,
+            height: `${res.BoundingBox.Height * 100}%`
+          }"
+        ></div>
+      </div>
     </div>
   </div>
 </template>
@@ -106,6 +133,18 @@ export default {
     },
     isDrawing() {
       return this.UIState.isDrawing
+    },
+    faceMatches() {
+      if (this.$store.state.testResult.result) {
+        return this.$store.state.testResult.result.FaceMatches
+      }
+      return []
+    },
+    umatchedFaces() {
+      if (this.$store.state.testResult.result) {
+        return this.$store.state.testResult.result.UnmatchedFaces
+      }
+      return []
     }
   },
   watch: {
@@ -126,6 +165,12 @@ export default {
         this.updateTargetImage()
         this.$store.dispatch('setUIState', {
           selectedAction: null
+        })
+        this.$store.dispatch('setResultState', {
+          loading: false,
+          result: null,
+          targetImg: null,
+          refImg: null
         })
       } else if (action === 'submit-test') {
         // if it's not loading
@@ -452,6 +497,8 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@import '~@/css/vars';
+
 canvas {
   display: block;
   width: 100%;
@@ -460,5 +507,9 @@ canvas {
 .full-width {
   margin-left: calc(-100vw / 2 + 100% / 2);
   margin-right: calc(-100vw / 2 + 100% / 2);
+}
+.face {
+  position: absolute;
+  opacity: 0.5;
 }
 </style>
