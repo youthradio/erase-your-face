@@ -12,7 +12,11 @@
               <div v-html="section.text"></div>
             </div>
             <div v-else>
-              <component :is="featuredComponent(section.title)" section.type />
+              <component
+                :is="featuredComponent(section.title)"
+                v-bind="{ legends: articleData.infographic }"
+                section.type
+              />
             </div>
           </div>
         </template>
