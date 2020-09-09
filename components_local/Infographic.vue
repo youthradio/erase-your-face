@@ -1,5 +1,5 @@
 <template>
-  <div ref="view" class="full-width overflow-hidden pointer">
+  <div ref="view" class="full-width overflow-hidden pointer bg-gray">
     <svg
       ref="content"
       xmlns="http://www.w3.org/2000/svg"
