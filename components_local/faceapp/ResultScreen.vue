@@ -8,6 +8,9 @@
         <canvas ref="refImgCanvas"></canvas>
       </div>
       <div class="w-60 ph1">
+        <h3 v-if="testResult.error" class="lh-title f5 f4-ns">
+          No face detected on reference image
+        </h3>
         <h3 class="lh-title f5 f4-ns">
           {{ faceMatches.length > 0 ? faceMatches.length : 'No' }} Matching
           faces
@@ -56,7 +59,9 @@ export default {
     async 'UIState.isLoadingResult'() {
       if (!this.UIState.isLoadingResult) {
         this.isFirstTime = false
-        await this.drawResult()
+        if (this.testResult) {
+          await this.drawResult()
+        }
         this.$refs.container.scrollIntoView({ behavior: 'smooth' })
       }
     }

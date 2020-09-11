@@ -61,7 +61,7 @@
         tabindex="0"
       ></canvas>
       <div
-        v-if="faceMatches.length || umatchedFaces.length"
+        v-if="faceMatches || umatchedFaces"
         class="absolute w-100 h-100 top-0 left-0"
       >
         <div
@@ -149,7 +149,6 @@ export default {
   },
   watch: {
     'UIState.selectedAction'(action) {
-      console.log(action)
       if (action === 'undo') {
         this.rollBack()
         // clean action state so it triggers watch again
@@ -308,8 +307,6 @@ export default {
           }
         }).then((res) => res.json())
 
-        console.log('result', result)
-        console.log(sourceBlob, targetBlob)
         this.$store.dispatch('setUIState', {
           isLoadingResult: false
         })
@@ -320,12 +317,15 @@ export default {
           refImg: targetBlob
         })
       } catch (error) {
-        console.log(error)
+        console.log('noface', error)
         this.$store.dispatch('setUIState', {
           isLoadingResult: false
         })
         this.$store.dispatch('setResultState', {
           loading: false,
+          result: null,
+          targetImg: null,
+          refImg: null,
           error
         })
       }

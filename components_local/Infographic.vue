@@ -1,5 +1,9 @@
 <template>
-  <div ref="view" class="full-width overflow-hidden pointer bg-gray">
+  <div
+    ref="view"
+    class="full-width overflow-hidden pointer bg-gray"
+    @click.prevent="click = true"
+  >
     <svg
       ref="content"
       xmlns="http://www.w3.org/2000/svg"
@@ -507,6 +511,12 @@ export default {
       default: () => []
     }
   },
+  data() {
+    return {
+      sb: null,
+      click: false
+    }
+  },
   computed: {
     windowWidth() {
       if (typeof window !== 'undefined') {
@@ -516,13 +526,25 @@ export default {
     }
   },
   mounted() {
-    ;(() =>
-      new ScrollBooster({
-        viewport: this.$refs.view,
-        content: this.$refs.content,
-        direction: 'horizontal',
-        scrollMode: 'native'
-      }))()
+    this.sb = new ScrollBooster({
+      viewport: this.$refs.view,
+      content: this.$refs.content,
+      direction: 'horizontal',
+      scrollMode: 'native'
+    })
+    this.animate()
+  },
+  methods: {
+    async animate() {
+      const w = this.$refs.content.getBoundingClientRect().width
+      const ltime = new Date()
+      let p = 0
+      while (p < w && !this.click && new Date() - ltime < 60000) {
+        p++
+        this.sb.setPosition({ x: p, y: 0 })
+        await new Promise((resolve) => setTimeout(resolve, 5))
+      }
+    }
   }
 }
 </script>
