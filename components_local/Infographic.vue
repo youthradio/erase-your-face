@@ -532,17 +532,31 @@ export default {
       direction: 'horizontal',
       scrollMode: 'native'
     })
-    this.animate()
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.intersectionRatio > 0)) {
+          this.animate()
+        }
+      },
+      {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0
+      }
+    )
+    observer.observe(this.$refs.view)
   },
   methods: {
     async animate() {
       const w = this.$refs.content.getBoundingClientRect().width
       const ltime = new Date()
       let p = 0
+      await new Promise((resolve) => setTimeout(resolve, 800))
+
       while (p < w && !this.click && new Date() - ltime < 60000) {
         p++
         this.sb.setPosition({ x: p, y: 0 })
-        await new Promise((resolve) => setTimeout(resolve, 5))
+        await new Promise((resolve) => setTimeout(resolve, 20))
       }
     }
   }
