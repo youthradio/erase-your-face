@@ -52,10 +52,19 @@
             </details>
             <!-- </div> -->
           </template>
-          <h3 class="roboto-mono green b">
+          <h4 class="roboto-mono green b">
             Credits
-          </h3>
-          <div v-html="articleData.credits.text" />
+          </h4>
+          <div class="f7">
+            <div v-html="articleData.credits.text" />
+            <ul class="pa0 list">
+              <template v-for="i in articleData.credits.list">
+                <li :key="i.v" class="">
+                  <b>{{ i.k }}: </b>{{ i.v }}
+                </li>
+              </template>
+            </ul>
+          </div>
         </div>
       </article>
 
