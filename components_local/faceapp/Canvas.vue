@@ -44,7 +44,6 @@
         @touchstart.prevent="mouseEvent"
         @touchend.prevent="mouseEvent"
         @touchmove.prevent="mouseEvent"
-        @mousedonw.prevent="mouseEvent"
         @mousedown.prevent="mouseEvent"
         @mouseup.prevent="mouseEvent"
         @mousemove.prevent="mouseEvent"

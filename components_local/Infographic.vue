@@ -2,7 +2,8 @@
   <div
     ref="view"
     class="full-width overflow-hidden pointer bg-gray"
-    @click.prevent="click = true"
+    @touchstart.prevent="click = true"
+    @mousedown.prevent="click = true"
   >
     <svg
       ref="content"
