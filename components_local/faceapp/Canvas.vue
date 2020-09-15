@@ -49,7 +49,7 @@
         @mousemove.prevent="mouseEvent"
       ></canvas>
     </div>
-    <div class="full-width relative mw9">
+    <div class="full-width relative mw9 mt3">
       <canvas ref="canvastarget" class="canvas-target" tabindex="0"></canvas>
       <div
         v-if="faceMatches || umatchedFaces"
