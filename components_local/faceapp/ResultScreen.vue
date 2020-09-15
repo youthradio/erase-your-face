@@ -1,21 +1,24 @@
 <template>
   <div v-if="!isLoadingResult && !isFirstTime" ref="container">
-    <h1 v-if="testResult.result" id="result" ref="result">RESULT</h1>
+    <h1 v-if="testResult.result" id="result" ref="result">RESULTS</h1>
     <h2 v-if="testResult.loading">LOADING</h2>
     <div class="flex">
       <div class="w-40 ph1">
         <h3 class="lh-title f5 f4-ns">Reference face</h3>
         <canvas ref="refImgCanvas"></canvas>
       </div>
-      <div class="w-60 ph1">
+      <div class="w-60 pl1 pl4-ns">
         <h3 v-if="testResult.error" class="lh-title f5 f4-ns">
           No face detected on reference image
         </h3>
-        <h3 class="lh-title f5 f4-ns">
+        <h3 class="lh-title f5 f4-ns mb0">
           {{ faceMatches.length > 0 ? faceMatches.length : 'No' }} Matching
           faces
         </h3>
-        <div ref="faceMatches" class="flex justify-around flex-wrap"></div>
+        <h4 v-if="faceMatches.length > 0" class="mt0 lh-title f7 f6-ns">
+          with similarity score
+        </h4>
+        <div ref="faceMatches" class="flex flex-wrap"></div>
       </div>
     </div>
     <h3 v-if="testResult.error">{{ testResult.error }}</h3>

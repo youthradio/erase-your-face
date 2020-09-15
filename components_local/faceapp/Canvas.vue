@@ -11,7 +11,7 @@
       >
         <a
           :class="[
-            'db pa1 ba br-pill bw1  b  tc f6 f4-ns no-underline b--white white',
+            'db pa1 ba br-pill bw1  b  tc f7 f5-ns no-underline b--white white',
             !UIState.isLoadingResult ? 'grow' : 'o-50'
           ]"
           href="#"
@@ -28,7 +28,7 @@
       >
         <a
           :class="[
-            'db pa1 ba br-pill bw1  b  tc f6 f4-ns no-underline b--white white',
+            'db pa1 ba br-pill bw1  b  tc f7 f5-ns no-underline b--white white',
             !UIState.isLoadingResult ? 'grow' : 'o-50'
           ]"
           href="#"
@@ -49,16 +49,8 @@
         @mousemove.prevent="mouseEvent"
       ></canvas>
     </div>
-    <p>
-      Can Amazon Rekognition find your cover up face in here? Submit and check
-      it out!
-    </p>
-    <div class="full-width relative">
-      <canvas
-        ref="canvastarget"
-        class="canvas-target center mw9 relative"
-        tabindex="0"
-      ></canvas>
+    <div class="full-width relative mw9">
+      <canvas ref="canvastarget" class="canvas-target" tabindex="0"></canvas>
       <div
         v-if="faceMatches || umatchedFaces"
         class="absolute w-100 h-100 top-0 left-0"
@@ -504,8 +496,8 @@ canvas {
   height: auto;
 }
 .full-width {
-  margin-left: calc(-100vw / 2 + 100% / 2);
-  margin-right: calc(-100vw / 2 + 100% / 2);
+  margin-left: calc(max(-100vw, -64rem) / 2 + 100% / 2);
+  margin-right: calc(max(-100vw, -64rem) / 2 + 100% / 2);
 }
 .face {
   position: absolute;

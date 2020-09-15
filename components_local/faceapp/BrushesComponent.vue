@@ -12,12 +12,12 @@
           isDrawing ? { pointerEvents: 'none' } : { pointerEvents: 'all' }
         "
       >
-        <div class="flex flex-column">
+        <div class="flex flex-column mt2">
           <a
             v-for="color in toolsData.colors"
             :key="color"
             href="#"
-            class="ma1 grow"
+            class="margins grow"
             @click.prevent="setColor(color)"
           >
             <svg class="db w-100" width="20" viewBox="0 0 39 38" fill="none">
@@ -73,7 +73,7 @@
             </svg>
           </a> -->
           <a
-            class="b white ma1 tc f7 no-underline grow"
+            class="b white margins tc f7 no-underline grow"
             href="#"
             @click.prevent="setActionState('undo')"
           >
@@ -147,5 +147,8 @@ export default {
   paint-order: stroke;
   stroke: white;
   stroke-width: 15px;
+}
+.margins {
+  margin: 0 0 2px 0.5rem;
 }
 </style>

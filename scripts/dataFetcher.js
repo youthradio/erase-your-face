@@ -30,7 +30,7 @@ marked.setOptions({
 
 const renderer = {
   link(href, title, text) {
-    return `<a target="_blank" rel="nofollow" href="${href}" class="link blue underline underline-hover hover-dark-red">${text}</a>`
+    return `<a target="_blank" rel="nofollow" href="${href}" class="link green underline underline-hover hover-dark-green">${text}</a>`
   }
 }
 

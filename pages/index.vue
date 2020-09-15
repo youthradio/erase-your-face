@@ -5,15 +5,15 @@
       <article class="lh-copy measure-wide center">
         <template v-for="section in articleData.sections">
           <div :key="section.text">
+            <h3 v-if="section.title !== 'null'" class="roboto-mono green b ttu">
+              {{ section.title }}
+            </h3>
             <div v-if="section.type === 'text'">
-              <h3 v-if="section.title !== 'null'" class="roboto-mono green b">
-                {{ section.title }}
-              </h3>
               <div v-html="section.text"></div>
             </div>
             <div v-else>
               <component
-                :is="featuredComponent(section.title)"
+                :is="featuredComponent(section.type)"
                 v-bind="{ legends: articleData.infographic }"
                 section.type
               />
@@ -55,7 +55,7 @@
           <h4 class="roboto-mono green b">
             Credits
           </h4>
-          <div class="f7">
+          <div>
             <div v-html="articleData.credits.text" />
             <ul class="pa0 list">
               <template v-for="i in articleData.credits.list">

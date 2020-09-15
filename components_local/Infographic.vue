@@ -11,6 +11,7 @@
         xmlns="http://www.w3.org/2000/svg"
         :height="windowWidth > 500 ? 500 : 350"
         fill="none"
+        class="ph6"
         viewBox="0 0 2265 550"
       >
         <defs />
@@ -481,12 +482,15 @@
           d="M486 354c-2-1-2-3-2-5l1-232 1-3 3-1h220c2 0 4 0 5 2l1 3v232l-1 4-5 1H489l-3-1zm223-4V119l-216-1-2 1-1 2v228l219 1z"
         />
       </svg>
-      <div class="absolute top-0 left-0 pointer-events-none" :style="svgDim">
-        <div class="flex justify-around w-100 h-100 items-end">
+      <div
+        class="absolute top-0 left-0 pointer-events-none ph6"
+        :style="svgDim"
+      >
+        <div class="flex justify-around w-100 h-100 mt3 items-end">
           <template v-for="legend in legends">
             <div
               :key="legend"
-              class="bg-light-green lh-title f5-ns f4 measure-narrow flex items-center items-center pa2"
+              class="bg-light-green lh-title f6-ns f5 measure-narrow flex items-center items-center pa2"
             >
               {{ legend }}
             </div>
@@ -512,7 +516,7 @@ export default {
     return {
       sb: null,
       click: false,
-      svgDim: {}
+      svgDim: { width: '2265px', height: '100%' }
     }
   },
   computed: {
