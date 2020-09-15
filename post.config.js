@@ -6,9 +6,9 @@ module.exports = {
   location: 'Oakland, CA',
   description: 'SEO friendly Description',
   summary: 'SEO friendly Description',
-  url: 'CANONICAL URL',
+  url: 'https://youthradio.github.io/erase-your-face',
   featureImage:
-    'https://interactive.yr.media/college-app-guide/images/college-guide-featurex1875.jpg',
+    'https://youthradio.github.io/erase-your-face/images/social.jpg',
   featureImagePath: 'images/feature-image',
   featureImageDescription: 'Woman looking at kiosk.',
   featureImageCaption: '(Photo: Andersen Ross Photography Inc/Getty Images)',
