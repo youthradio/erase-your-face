@@ -481,11 +481,8 @@
         d="M486 354c-2-1-2-3-2-5l1-232 1-3 3-1h220c2 0 4 0 5 2l1 3v232l-1 4-5 1H489l-3-1zm223-4V119l-216-1-2 1-1 2v228l219 1z"
       />
       <foreignObject x="0" y="0" width="100%" height="100%">
-        <div
-          xmlns="http://www.w3.org/1999/xhtml"
-          class="absolute flex items-end left-0 right-0 bottom-0"
-        >
-          <div class="flex items-center justify-around w-100">
+        <div xmlns="http://www.w3.org/1999/xhtml" class="fixed w-100 h-100">
+          <div class="flex items-center justify-around w-100 h-100">
             <template v-for="legend in legends">
               <div
                 :key="legend"
