@@ -1,7 +1,7 @@
 <template>
   <div>
-    <HeaderContainer />
-    <main class="mw8 center ph3">
+    <HeaderContainer header-type="video" />
+    <main class="mw8 center ph3 mt4">
       <article class="lh-copy measure-wide center">
         <template v-for="section in articleData.sections">
           <div :key="section.text">

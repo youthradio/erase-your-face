@@ -278,17 +278,44 @@ export default {
       this.$store.dispatch('setUIState', {
         isLoadingResult: true
       })
-      const targetImageURL = this.main.canvas.toDataURL('image/jpeg', 0.8)
+
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+
+      canvas.width = this.main.canvas.width * 0.5
+      canvas.height = this.main.canvas.height * 0.5
+
+      ctx.drawImage(
+        this.main.canvas,
+        0,
+        0,
+        this.main.canvas.width * 0.5,
+        this.main.canvas.height * 0.5
+      )
+
+      const targetImageURL = canvas.toDataURL('image/jpeg', 1)
 
       const targetBlob = await fetch(targetImageURL).then((res) => res.blob())
 
       // source blob is the grid with all image and reference
-      const sourceImageURL = this.target.canvas.toDataURL('image/jpeg', 0.8)
+
+      canvas.width = this.target.canvas.width * 0.8
+      canvas.height = this.target.canvas.height * 0.8
+
+      ctx.drawImage(
+        this.target.canvas,
+        0,
+        0,
+        this.target.canvas.width * 0.8,
+        this.target.canvas.height * 0.8
+      )
+      const sourceImageURL = canvas.toDataURL('image/jpeg', 1)
       const sourceBlob = await fetch(sourceImageURL).then((res) => res.blob())
       const formData = new FormData()
 
       formData.append('referenceimage', targetBlob, 'refimg.jpg')
       formData.append('targetimage', sourceBlob, 'targetimg.jpg')
+      console.log(targetBlob, sourceBlob)
       try {
         const result = await fetch(lambdaAppURL, {
           method: 'POST',
