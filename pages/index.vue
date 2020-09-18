@@ -56,7 +56,7 @@
             Credits
           </h4>
           <div>
-            <div v-html="articleData.credits.text" />
+            <div v-html="articleData.credits.open.text" />
             <ul class="pa0 list">
               <template v-for="i in articleData.credits.list">
                 <li :key="i.v" class="">
@@ -64,6 +64,7 @@
                 </li>
               </template>
             </ul>
+            <div v-html="articleData.credits.close.text" />
           </div>
         </div>
       </article>
