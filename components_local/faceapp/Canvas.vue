@@ -188,6 +188,12 @@ export default {
         this.$store.dispatch('setUIState', {
           selectedAction: null
         })
+      } else if (action === 'clear-canvas') {
+        this.clearCanvas()
+        this.updateTargetImage()
+        this.$store.dispatch('setUIState', {
+          selectedAction: null
+        })
       }
     }
     // history: {
@@ -412,7 +418,16 @@ export default {
 
       this.main.ctx.drawImage(this.layer.canvas, 0, 0)
     },
-
+    clearLayer() {
+      this.$set(this.history, 'points', [])
+      this.historyPointer = -1
+      this.layer.ctx.clearRect(
+        0,
+        0,
+        this.layer.canvas.width,
+        this.layer.canvas.height
+      )
+    },
     clearCanvas() {
       this.$set(this.history, 'points', [])
       this.historyPointer = -1
