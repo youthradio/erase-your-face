@@ -1,37 +1,35 @@
 <template>
-  <div class="pointer-events-none min-content">
-    <div class="tool-list">
-      <div
-        class=""
-        :style="
-          isDrawing ? { pointerEvents: 'none' } : { pointerEvents: 'all' }
-        "
-      ></div>
-      <div
-        :style="
-          isDrawing ? { pointerEvents: 'none' } : { pointerEvents: 'all' }
-        "
-      >
-        <div class="flex flex-column mt2">
-          <a
-            v-for="color in toolsData.colors"
-            :key="color"
-            href="#"
-            class="margins grow"
-            @click.prevent="setColor(color)"
-          >
-            <svg class="db w-100" width="20" viewBox="0 0 39 38" fill="none">
-              <path
-                d="M19.5 36.5C9.5219 36.5 1.5 28.6285 1.5 19C1.5 9.37151
+  <div class="flex justify-between items-end">
+    <a
+      v-for="color in toolsData.colors"
+      :key="color"
+      href="#"
+      class="db grow"
+      @click.prevent="setColor(color)"
+    >
+      <svg class="db mr1" height="25" viewBox="0 0 39 38" fill="none">
+        <path
+          d="M19.5 36.5C9.5219 36.5 1.5 28.6285 1.5 19C1.5 9.37151
               9.52191 1.5 19.5 1.5C29.4781 1.5 37.5 9.37151 37.5 19C37.5 28.6285
               29.4781 36.5 19.5 36.5Z"
-                :fill="color"
-                :stroke="color === selectedColor ? '' : 'white'"
-                stroke-width="3"
-              />
-            </svg>
-          </a>
-          <!-- <a class="ma1 grow" href="#">
+          :fill="color"
+          :stroke="color === selectedColor ? '' : 'lightgray'"
+          stroke-width="2"
+        />
+      </svg>
+    </a>
+    <div class="ph2">
+      <span class="f7 white"> alpha </span>
+      <input
+        class="db w-100"
+        type="range"
+        min="0"
+        max="1"
+        step="0.05"
+        value="1"
+      />
+    </div>
+    <!-- <a class="ma1 grow" href="#">
             <svg
               class="db w-100"
               width="20"
@@ -71,7 +69,7 @@
                 />
               </g>
             </svg>
-          </a> -->
+          </a>
           <a
             class="b white margins tc f7 no-underline grow"
             href="#"
@@ -79,9 +77,7 @@
           >
             <small>UNDO</small>
           </a>
-        </div>
-      </div>
-    </div>
+          -->
   </div>
 </template>
 
@@ -147,8 +143,5 @@ export default {
   paint-order: stroke;
   stroke: white;
   stroke-width: 15px;
-}
-.margins {
-  margin: 0 0 2px 0.5rem;
 }
 </style>

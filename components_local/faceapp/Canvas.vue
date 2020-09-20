@@ -1,55 +1,64 @@
 <template>
   <div ref="container">
-    <div class="relative">
-      <BrushesComponent class="absolute top-0 left-0" />
-
-      <div
-        class="absolute bottom-1 left-1"
-        :style="
-          isDrawing ? { pointerEvents: 'none' } : { pointerEvents: 'all' }
-        "
-      >
+    <div class="flex justify-between items-end pa1 bg-black">
+      <BrushesComponent />
+      <div>
         <a
-          :class="[
-            'db pa1 ba br-pill bw1  b  tc f7 f5-ns no-underline b--white white',
-            !UIState.isLoadingResult ? 'grow' : 'o-50'
-          ]"
+          :style="{ visibility: historyPointer > -1 ? 'visible' : 'hidden' }"
+          class="db grow"
+          alt="Undo"
+          title="Undo"
           href="#"
-          @click.prevent="setActionState('another-face')"
+          @click.prevent="setActionState('undo')"
         >
-          {{ !UIState.isLoadingResult ? 'ANOTHER FACE' : 'LOADING' }}
+          <UndoButton />
         </a>
       </div>
-      <div
-        class="absolute bottom-1 right-1"
-        :style="
-          isDrawing ? { pointerEvents: 'none' } : { pointerEvents: 'all' }
-        "
-      >
-        <a
-          :class="[
-            'db pa1 ba br-pill bw1  b  tc f7 f5-ns no-underline b--white white',
-            !UIState.isLoadingResult ? 'grow' : 'o-50'
-          ]"
-          href="#"
-          @click.prevent="setActionState('submit-test')"
-        >
-          {{ !UIState.isLoadingResult ? 'SUBMIT' : 'LOADING' }}
-        </a>
-      </div>
-
-      <canvas
-        ref="canvas"
-        tabindex="0"
-        @touchstart.prevent="mouseEvent"
-        @touchend.prevent="mouseEvent"
-        @touchmove.prevent="mouseEvent"
-        @mousedown.prevent="mouseEvent"
-        @mouseup.prevent="mouseEvent"
-        @mousemove.prevent="mouseEvent"
-      ></canvas>
     </div>
-    <div class="full-width relative mw9 mt3">
+    <canvas
+      ref="canvas"
+      tabindex="0"
+      @touchstart.prevent="mouseEvent"
+      @touchend.prevent="mouseEvent"
+      @touchmove.prevent="mouseEvent"
+      @mousedown.prevent="mouseEvent"
+      @mouseup.prevent="mouseEvent"
+      @mousemove.prevent="mouseEvent"
+    ></canvas>
+    <div class="flex justify-between items-end mv1">
+      <a
+        :class="[
+          'db pa1 ba br-pill bw1 b tc f7 f5-ns no-underline b--black black',
+          !UIState.isLoadingResult ? 'grow' : 'o-50'
+        ]"
+        href="#"
+        @click.prevent="setActionState('clear-canvas')"
+      >
+        {{ !UIState.isLoadingResult ? 'CLEAR' : 'LOADING' }}
+      </a>
+      <a
+        :class="[
+          'db pa1 ba br-pill bw1 b tc f7 f5-ns no-underline b--black black',
+          !UIState.isLoadingResult ? 'grow' : 'o-50'
+        ]"
+        href="#"
+        @click.prevent="setActionState('another-face')"
+      >
+        {{ !UIState.isLoadingResult ? 'ANOTHER FACE' : 'LOADING' }}
+      </a>
+      <a
+        :class="[
+          'db pa1 ba br-pill bw1 b tc f7 f5-ns no-underline b--black black',
+          !UIState.isLoadingResult ? 'grow' : 'o-50'
+        ]"
+        href="#"
+        @click.prevent="setActionState('submit-test')"
+      >
+        {{ !UIState.isLoadingResult ? 'SUBMIT' : 'LOADING' }}
+      </a>
+    </div>
+
+    <div class="full-width relative mw9">
       <canvas ref="canvastarget" class="canvas-target" tabindex="0"></canvas>
       <div
         v-if="faceMatches || umatchedFaces"
@@ -85,11 +94,13 @@
 <script>
 import { lambdaAppURL } from '../../post.config'
 import BrushesComponent from './BrushesComponent.vue'
+import UndoButton from './UndoButton.vue'
 
 export default {
   name: 'Canvas',
   components: {
-    BrushesComponent
+    BrushesComponent,
+    UndoButton
   },
   props: {},
   data() {
@@ -113,6 +124,11 @@ export default {
     }
   },
   computed: {
+    pointerEvents() {
+      return this.isDrawing
+        ? { pointerEvents: 'none' }
+        : { pointerEvents: 'all' }
+    },
     referenceImages() {
       return this.$store.state.referenceImages
     },
@@ -186,6 +202,9 @@ export default {
     document.addEventListener('keydown', (event) => {
       if (event.code === 'KeyZ' && (event.ctrlKey || event.metaKey)) {
         this.rollBack()
+        this.$store.dispatch('setUIState', {
+          selectedAction: null
+        })
       }
     })
     this.initCanvases()
@@ -349,7 +368,7 @@ export default {
       }
     },
     rollBack() {
-      if (!this.history.points.length) {
+      if (this.historyPointer <= -1) {
         console.log('RETUNR')
         return
       }

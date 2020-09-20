@@ -41,7 +41,7 @@
             <!-- <div  class="mv3"> -->
             <details :key="i.question" class="question mv3">
               <summary class="dib pa2 bg-green ba b--green bw2">
-                <h3 class="di lh-title fa5 fa4-ns ">
+                <h3 class="di lh-title fa5 fa4-ns normal">
                   {{ i.question }}
                 </h3></summary
               >
@@ -52,9 +52,9 @@
             </details>
             <!-- </div> -->
           </template>
-          <h4 class="roboto-mono green b">
+          <h3 class="roboto-mono green b ttu">
             Credits
-          </h4>
+          </h3>
           <div>
             <div v-html="articleData.credits.open.text" />
             <ul class="pa0 list">
