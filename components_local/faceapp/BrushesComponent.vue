@@ -7,26 +7,27 @@
       class="db grow"
       @click.prevent="setColor(color)"
     >
-      <svg class="db mr1" height="25" viewBox="0 0 39 38" fill="none">
+      <svg class="db mr1" height="25" viewBox="0 0 39 38">
         <path
           d="M19.5 36.5C9.5219 36.5 1.5 28.6285 1.5 19C1.5 9.37151
               9.52191 1.5 19.5 1.5C29.4781 1.5 37.5 9.37151 37.5 19C37.5 28.6285
               29.4781 36.5 19.5 36.5Z"
           :fill="color"
-          :stroke="color === selectedColor ? '' : 'lightgray'"
+          :stroke="color === UIState.selectedColor ? '' : 'lightgray'"
           stroke-width="2"
         />
       </svg>
     </a>
     <div class="ph2">
-      <span class="f7 white"> alpha </span>
+      <span class="f7 white"> opacity </span>
       <input
+        v-model.number="selectedOpacity"
         class="db w-100"
         type="range"
         min="0"
         max="1"
-        step="0.05"
         value="1"
+        step="0.01"
       />
     </div>
     <!-- <a class="ma1 grow" href="#">
@@ -87,8 +88,7 @@ export default {
   props: {},
   data() {
     return {
-      selectedColor: null,
-      selectedStrokeWeight: null,
+      selectedOpacity: 1,
       toolState: {
         strokeSizeMenu: false,
         colorPickerMenu: false
@@ -109,9 +109,10 @@ export default {
       return {}
     }
   },
-  created() {
-    this.selectedColor = this.UIState.selectedColor
-    this.selectedStrokeWeight = this.UIState.selectedStrokeWeight
+  watch: {
+    selectedOpacity() {
+      this.setOpacity(this.selectedOpacity)
+    }
   },
   methods: {
     setActionState(state) {
@@ -120,16 +121,19 @@ export default {
       })
     },
     setColor(color) {
-      this.selectedColor = color
       this.$store.dispatch('setUIState', {
-        selectedColor: this.selectedColor
+        selectedColor: color
+      })
+    },
+    setOpacity(opacity) {
+      this.$store.dispatch('setUIState', {
+        selectedOpacity: opacity
       })
     },
     setStrokeWeight(stroke) {
       // would this be to send to the store?
-      this.selectedStrokeWeight = stroke
       this.$store.dispatch('setUIState', {
-        selectedStrokeWeight: this.selectedStrokeWeight
+        selectedStrokeWeight: stroke
       })
     }
   }

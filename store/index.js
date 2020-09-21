@@ -3,6 +3,7 @@ import data from './data'
 export const state = () => ({
   UIState: {
     selectedColor: null,
+    selectedOpacity: null,
     selectedStrokeWeight: null,
     selectedAction: null,
     isDrawing: null,
@@ -39,6 +40,9 @@ export const mutations = {
     state.toolsData = Object.assign({}, data.toolsData)
     state.UIState.selectedAction = 'none'
     state.UIState.selectedColor = state.toolsData.colors[4]
+    state.UIState.selectedOpacity = 1
+    state.UIState.isDrawing = false
+
     state.UIState.selectedStrokeWeight = state.toolsData.strokeWeight[3]
     state.progresss = 'imageSelection'
     state.testResult.loading = false

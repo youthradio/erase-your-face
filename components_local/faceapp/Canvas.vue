@@ -4,7 +4,7 @@
       <BrushesComponent />
       <div>
         <a
-          :style="{ visibility: historyPointer > -1 ? 'visible' : 'hidden' }"
+          :style="{ visibility: enableUndoButton > 0 ? 'visible' : 'hidden' }"
           class="db grow"
           alt="Undo"
           title="Undo"
@@ -21,9 +21,11 @@
       @touchstart.prevent="mouseEvent"
       @touchend.prevent="mouseEvent"
       @touchmove.prevent="mouseEvent"
+      @touchcancel.prevent="mouseEvent"
       @mousedown.prevent="mouseEvent"
       @mouseup.prevent="mouseEvent"
       @mousemove.prevent="mouseEvent"
+      @mouseout.prevent="mouseEvent"
     ></canvas>
     <div class="flex justify-between items-end mv1">
       <a
@@ -92,6 +94,7 @@
 </template>
 
 <script>
+import { nanoid } from 'nanoid'
 import { lambdaAppURL } from '../../post.config'
 import BrushesComponent from './BrushesComponent.vue'
 import UndoButton from './UndoButton.vue'
@@ -106,12 +109,9 @@ export default {
   data() {
     return {
       isReadytoDraw: false,
-      historyPointer: -1,
-      history: {
-        points: [],
-        colors: [],
-        sizes: []
-      },
+      layers: new Map(),
+      enableUndoButton: false,
+      currLayerId: null,
       penSet: false,
       main: { canvas: null, ctx: null },
       target: { canvas: null, ctx: null },
@@ -124,11 +124,6 @@ export default {
     }
   },
   computed: {
-    pointerEvents() {
-      return this.isDrawing
-        ? { pointerEvents: 'none' }
-        : { pointerEvents: 'all' }
-    },
     referenceImages() {
       return this.$store.state.referenceImages
     },
@@ -167,7 +162,7 @@ export default {
         this.targetImageId = this.randomImagesIds[
           ~~(Math.random() * this.randomImagesIds.length)
         ]
-        this.clearCanvas()
+        this.clearAll()
         this.updateTargetImage()
         this.$store.dispatch('setUIState', {
           selectedAction: null
@@ -189,7 +184,7 @@ export default {
           selectedAction: null
         })
       } else if (action === 'clear-canvas') {
-        this.clearCanvas()
+        this.clearAll()
         this.updateTargetImage()
         this.$store.dispatch('setUIState', {
           selectedAction: null
@@ -204,7 +199,6 @@ export default {
     // }
   },
   mounted() {
-    document.addEventListener('mouseup', this.mouseEvent)
     document.addEventListener('keydown', (event) => {
       if (event.code === 'KeyZ' && (event.ctrlKey || event.metaKey)) {
         this.rollBack()
@@ -224,6 +218,7 @@ export default {
       this.main.canvas.width = 512
       this.main.canvas.height = 512
       this.main.ctx = this.main.canvas.getContext('2d')
+      // this.main.ctx.globalCompos`teOperation = 'lighten'
 
       // foregound canvas
       this.layer.canvas = document.createElement('canvas')
@@ -231,7 +226,7 @@ export default {
       this.layer.ctx = this.layer.canvas.getContext('2d')
       this.layer.ctx.lineWidth = 10
       this.layer.ctx.lineJoin = this.layer.ctx.lineCap = 'round'
-
+      // this.layer.ctx.globalCompositeOperation = 'overlay'
       // testing  target canvas
       const P_TOTAL = 1117
       this.target.canvas = this.$refs.canvastarget
@@ -374,27 +369,25 @@ export default {
       }
     },
     rollBack() {
-      if (this.historyPointer <= -1) {
-        console.log('RETUNR')
+      if (this.layers.size <= 0) {
+        this.enableUndoButton = false
+        console.log('no more layers')
         return
       }
-      // clear layer
-      this.layer.ctx.clearRect(
-        0,
-        0,
-        this.layer.canvas.width,
-        this.layer.canvas.height
-      )
-      this.history.points.pop()
-      this.history.colors.pop()
-      this.history.sizes.pop()
-      this.historyPointer--
-      // this.$set(this.history, "points", );
+      // clear current layer
+      const ids = Array.from(this.layers.keys())
+      this.layers.delete(ids[ids.length - 1])
+      this.enableUndoButton = !(this.layers.size <= 0)
 
-      this.history.points.forEach((points, historyIndex) => {
-        this.layer.ctx.strokeStyle = this.history.colors[historyIndex]
-        this.layer.ctx.lineWidth = this.history.sizes[historyIndex]
-        points.forEach((point, i) => {
+      this.clearLayer()
+      this.clearCanvas()
+
+      Array.from(this.layers.values()).forEach((layer) => {
+        this.layer.ctx.strokeStyle = layer.color
+        this.layer.ctx.lineWidth = layer.size
+        this.layer.ctx.globalAlpha = layer.opacity
+
+        layer.points.forEach((point, i) => {
           if (i <= 0) {
             this.layer.ctx.beginPath()
             this.layer.ctx.moveTo(point[0], point[1])
@@ -402,7 +395,10 @@ export default {
           this.layer.ctx.lineTo(point[0], point[1])
           this.layer.ctx.stroke()
         })
+        // reset alpha after drawing on ctx
+        this.layer.ctx.globalAlpha = 1.0
       })
+
       this.main.ctx.drawImage(
         this.currTargetImg,
         0,
@@ -419,8 +415,6 @@ export default {
       this.main.ctx.drawImage(this.layer.canvas, 0, 0)
     },
     clearLayer() {
-      this.$set(this.history, 'points', [])
-      this.historyPointer = -1
       this.layer.ctx.clearRect(
         0,
         0,
@@ -429,14 +423,6 @@ export default {
       )
     },
     clearCanvas() {
-      this.$set(this.history, 'points', [])
-      this.historyPointer = -1
-      this.layer.ctx.clearRect(
-        0,
-        0,
-        this.layer.canvas.width,
-        this.layer.canvas.height
-      )
       this.main.ctx.clearRect(
         0,
         0,
@@ -444,16 +430,45 @@ export default {
         this.main.canvas.height
       )
     },
+    clearAll() {
+      this.layers = new Map()
+      this.currLayerId = null
+      this.clearLayer()
+      this.clearCanvas()
+    },
     mouseEvent(event) {
       event.preventDefault()
+      const rect = event.target.getBoundingClientRect()
+      const posx =
+        ((event.pageX || event.touches[0].pageX) -
+          (rect.left + document.documentElement.scrollLeft)) /
+        rect.width
+
+      const posy =
+        ((event.pageY || event.touches[0].pageY) -
+          (rect.top + document.documentElement.scrollTop)) /
+        rect.height
+
       if (!this.isReadytoDraw || this.isLoadingResult) return
       const eventType = event.type
-      if (eventType === 'mouseup' || eventType === 'touchend') {
+      if (
+        eventType === 'mouseup' ||
+        eventType === 'touchend' ||
+        eventType === 'touchcancel' ||
+        eventType === 'mouseout'
+      ) {
         this.$store.dispatch('setUIState', {
           isDrawing: false
         })
       } else if (eventType === 'mousedown' || eventType === 'touchstart') {
-        this.historyPointer++
+        this.currLayerId = nanoid()
+        this.layers.set(this.currLayerId, {
+          size: this.UIState.selectedStrokeWeight,
+          color: this.UIState.selectedColor,
+          opacity: this.UIState.selectedOpacity,
+          points: []
+        })
+        this.enableUndoButton = true
         this.$store.dispatch('setUIState', {
           isDrawing: true
         })
@@ -462,50 +477,26 @@ export default {
         (eventType === 'mousemove' || eventType === 'touchmove') &&
         this.isDrawing
       ) {
-        const rect = event.target.getBoundingClientRect()
         // const bodyRect = document.body.getBoundingClientRect();/
-
-        const posx =
-          ((event.pageX || event.touches[0].pageX) -
-            (rect.left + document.documentElement.scrollLeft)) /
-          rect.width
-
-        const posy =
-          ((event.pageY || event.touches[0].pageY) -
-            (rect.top + document.documentElement.scrollTop)) /
-          rect.height
-
-        if (this.history.points[this.historyPointer] === undefined) {
-          this.$set(this.history.points, this.historyPointer, [])
-
-          this.$set(
-            this.history.sizes,
-            this.historyPointer,
-            this.UIState.selectedStrokeWeight
-          )
-          this.$set(
-            this.history.colors,
-            this.historyPointer,
-            this.UIState.selectedColor
-          )
-        }
-        const currPoints = this.history.points[this.historyPointer]
-        this.$set(
-          this.history.points,
-          this.historyPointer,
-          currPoints.concat([
-            [posx * this.main.canvas.width, posy * this.main.canvas.height]
+        this.layers
+          .get(this.currLayerId)
+          .points.push([
+            posx * this.main.canvas.width,
+            posy * this.main.canvas.height
           ])
-        )
+
         // console.log("DRAW", this.history.points);
         this.draw()
       }
     },
     draw() {
-      const points = this.history.points[this.historyPointer]
+      const currLayer = this.layers.get(this.currLayerId)
+      const points = currLayer.points
       const pos = points.length - 1
-      this.layer.ctx.strokeStyle = this.history.colors[this.historyPointer]
-      this.layer.ctx.lineWidth = this.history.sizes[this.historyPointer]
+      this.layer.ctx.strokeStyle = currLayer.color
+      this.layer.ctx.lineWidth = currLayer.size
+      this.layer.ctx.globalAlpha = currLayer.opacity
+
       if (!this.penSet) {
         this.penSet = true
         this.layer.ctx.beginPath()
@@ -513,7 +504,28 @@ export default {
       }
       this.layer.ctx.lineTo(points[pos][0], points[pos][1])
       this.layer.ctx.stroke()
+      this.layer.ctx.globalAlpha = 1.0
+
+      this.main.ctx.clearRect(
+        0,
+        0,
+        this.main.canvas.width,
+        this.main.canvas.height
+      )
+      this.main.ctx.drawImage(
+        this.currTargetImg,
+        0,
+        0,
+        this.currTargetImg.width,
+        this.currTargetImg.height,
+        0,
+        0,
+        this.main.canvas.width,
+        this.currTargetImg.height *
+          (this.main.canvas.width / this.currTargetImg.width)
+      )
       this.main.ctx.drawImage(this.layer.canvas, 0, 0)
+      // this.main.ctx.globalAlpha = 1.0
     },
     loadTargetImage() {
       const imgData = `faces/${this.targetImageId}.jpg`

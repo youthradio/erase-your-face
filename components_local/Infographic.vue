@@ -506,7 +506,7 @@
       fill="none"
       viewBox="0 0 62 145"
       width="62"
-      class="absolute top-1 left-1 anima"
+      class="absolute top-0 left-0 anima h-100"
     >
       <path
         fill="#7BCF9A"
