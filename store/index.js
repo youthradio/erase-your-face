@@ -7,6 +7,7 @@ export const state = () => ({
     selectedStrokeWeight: null,
     selectedAction: null,
     isDrawing: null,
+    selectedMode: null,
     isLoadingResult: false
   },
   progress: null,
@@ -39,6 +40,7 @@ export const mutations = {
   LOAD_STORE(state) {
     state.toolsData = Object.assign({}, data.toolsData)
     state.UIState.selectedAction = 'none'
+    state.UIState.selectedMode = 'brush'
     state.UIState.selectedColor = state.toolsData.colors[4]
     state.UIState.selectedOpacity = 1.0
     state.UIState.isDrawing = false

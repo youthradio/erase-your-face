@@ -138,6 +138,9 @@ export default {
     UIState() {
       return this.$store.state.UIState
     },
+    brushMode() {
+      return this.UIState.selectedMode === 'brush'
+    },
     isLoadingResult() {
       return this.UIState.isLoadingResult
     },
@@ -231,7 +234,7 @@ export default {
       this.layer.ctx.lineWidth = 16
       this.layer.ctx.lineJoin = this.layer.ctx.lineCap = 'round'
       // this.layer.ctx.imageSmoothingEnabled = true
-      this.layer.ctx.translate(-0.5, -0.5)
+      // this.layer.ctx.translate(-0.5, -0.5)
 
       // drawing canvas overlaying main canvas
       this.drawingLayer.canvas = this.$refs.drawinglayer
@@ -239,7 +242,9 @@ export default {
       this.drawingLayer.ctx = this.drawingLayer.canvas.getContext('2d')
       this.drawingLayer.ctx.lineWidth = 16
       this.drawingLayer.ctx.lineJoin = this.drawingLayer.ctx.lineCap = 'round'
-      // this.drawingLayer.ctx.imageSmoothingEnabled = true
+      // this.drawingLayer.ctx.translate(0.5, 0.5)
+
+      this.drawingLayer.ctx.imageSmoothingEnabled = true
 
       // testing  target canvas with grid of faces
       this.target.canvas = this.$refs.canvastarget
@@ -430,8 +435,14 @@ export default {
         })
 
         // opacity before drawing final path on temp cavas
-        this.layer.ctx.globalAlpha = layer.opacity
+
+        this.layer.ctx.globalAlpha = layer.brushMode ? layer.opacity : 1.0
+        this.layer.ctx.globalCompositeOperation = layer.brushMode
+          ? 'source-over'
+          : 'destination-out'
         this.layer.ctx.drawImage(tempcanvas, 0, 0)
+        this.layer.ctx.globalCompositeOperation = 'source-over'
+
         // reset alpha after drawing on ctx
       })
     },
@@ -495,7 +506,11 @@ export default {
         this.clearCanvas()
         this.drawTargetImage()
         this.layer.ctx.globalAlpha = this.UIState.selectedOpacity
+        this.layer.ctx.globalCompositeOperation = this.brushMode
+          ? 'source-over'
+          : 'destination-out'
         this.layer.ctx.drawImage(this.drawingLayer.canvas, 0, 0)
+        this.layer.ctx.globalCompositeOperation = 'source-over'
         this.clearDrawingLayer()
 
         this.main.ctx.drawImage(this.layer.canvas, 0, 0)
@@ -510,17 +525,19 @@ export default {
         this.currLayerId = nanoid()
         const size = this.UIState.selectedStrokeWeight
         const color = this.UIState.selectedColor
-        const opacity = this.UIState.selectedOpacity
+        const opacity = this.brushMode ? this.UIState.selectedOpacity : 1.0
+        const brushMode = this.brushMode
         this.layers.set(this.currLayerId, {
           size,
           color,
           opacity,
+          brushMode,
           points: []
         })
         this.enableUndoButton = true
-        this.drawingLayer.ctx.strokeStyle = color
+        this.drawingLayer.ctx.strokeStyle = this.brushMode ? color : 'lightgray'
         this.drawingLayer.ctx.lineWidth = size
-        this.drawingLayer.canvas.style.opacity = opacity
+        this.drawingLayer.canvas.style.opacity = this.brushMode ? opacity : 1.0
       } else if (
         (eventType === 'mousemove' || eventType === 'touchmove') &&
         this.isDrawing

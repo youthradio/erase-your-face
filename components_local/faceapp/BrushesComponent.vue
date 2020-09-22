@@ -30,6 +30,13 @@
         step="0.01"
       />
     </div>
+    <a
+      class="b white margins tc f7 no-underline grow"
+      href="#"
+      @click.prevent="setMode('eraser')"
+    >
+      <small>ERASER</small>
+    </a>
     <!-- <a class="ma1 grow" href="#">
             <svg
               class="db w-100"
@@ -122,17 +129,25 @@ export default {
     },
     setColor(color) {
       this.$store.dispatch('setUIState', {
+        selectedMode: 'brush',
         selectedColor: color
+      })
+    },
+    setMode(mode) {
+      this.$store.dispatch('setUIState', {
+        selectedMode: mode
       })
     },
     setOpacity(opacity) {
       this.$store.dispatch('setUIState', {
+        selectedMode: 'brush',
         selectedOpacity: opacity
       })
     },
     setStrokeWeight(stroke) {
       // would this be to send to the store?
       this.$store.dispatch('setUIState', {
+        selectedMode: 'brush',
         selectedStrokeWeight: stroke
       })
     }
