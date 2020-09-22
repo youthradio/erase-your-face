@@ -15,18 +15,24 @@
         </a>
       </div>
     </div>
-    <canvas
-      ref="canvas"
-      tabindex="0"
-      @touchstart.prevent="mouseEvent"
-      @touchend.prevent="mouseEvent"
-      @touchmove.prevent="mouseEvent"
-      @touchcancel.prevent="mouseEvent"
-      @mousedown.prevent="mouseEvent"
-      @mouseup.prevent="mouseEvent"
-      @mousemove.prevent="mouseEvent"
-      @mouseout.prevent="mouseEvent"
-    ></canvas>
+    <div class="relative">
+      <canvas
+        ref="canvas"
+        tabindex="0"
+        @touchstart.prevent="mouseEvent"
+        @touchend.prevent="mouseEvent"
+        @touchmove.prevent="mouseEvent"
+        @touchcancel.prevent="mouseEvent"
+        @mousedown.prevent="mouseEvent"
+        @mouseup.prevent="mouseEvent"
+        @mousemove.prevent="mouseEvent"
+        @mouseout.prevent="mouseEvent"
+      ></canvas>
+      <canvas
+        ref="drawinglayer"
+        class="absolute top-0 left-0 pointer-events-none"
+      ></canvas>
+    </div>
     <div class="flex justify-between items-end mv1">
       <a
         :class="[
@@ -98,7 +104,8 @@ import { nanoid } from 'nanoid'
 import { lambdaAppURL } from '../../post.config'
 import BrushesComponent from './BrushesComponent.vue'
 import UndoButton from './UndoButton.vue'
-
+// total num on samples pictures faces
+const P_TOTAL = 1117
 export default {
   name: 'Canvas',
   components: {
@@ -112,10 +119,11 @@ export default {
       layers: new Map(),
       enableUndoButton: false,
       currLayerId: null,
-      penSet: false,
       main: { canvas: null, ctx: null },
       target: { canvas: null, ctx: null },
       layer: { canvas: null, ctx: null },
+      drawingLayer: { canvas: null, ctx: null },
+      lastMouse: {},
       currTargetImgBlob: null,
       currTargetImg: null,
       currTargetImgBlobNew: null,
@@ -176,7 +184,6 @@ export default {
       } else if (action === 'submit-test') {
         // if it's not loading
         if (!this.isLoadingResult) {
-          console.log('|TESTing')
           this.testImages()
           // clean action state so it triggers watch again
         }
@@ -191,12 +198,6 @@ export default {
         })
       }
     }
-    // history: {
-    //   handler() {
-    //     // console.log('POINTs')
-    //   },
-    //   deep: true
-    // }
   },
   mounted() {
     document.addEventListener('keydown', (event) => {
@@ -218,21 +219,35 @@ export default {
       this.main.canvas.width = 512
       this.main.canvas.height = 512
       this.main.ctx = this.main.canvas.getContext('2d')
+      // this.main.ctx.imageSmoothingEnabled = true
+
+      // this.main.ctx.globalCompositeOperation = 'overlay'
       // this.main.ctx.globalCompos`teOperation = 'lighten'
 
-      // foregound canvas
+      //  canvas for layer, rollback undo
       this.layer.canvas = document.createElement('canvas')
       this.layer.canvas.width = this.layer.canvas.height = this.main.canvas.width
       this.layer.ctx = this.layer.canvas.getContext('2d')
-      this.layer.ctx.lineWidth = 10
+      this.layer.ctx.lineWidth = 16
       this.layer.ctx.lineJoin = this.layer.ctx.lineCap = 'round'
-      // this.layer.ctx.globalCompositeOperation = 'overlay'
-      // testing  target canvas
-      const P_TOTAL = 1117
+      // this.layer.ctx.imageSmoothingEnabled = true
+      this.layer.ctx.translate(-0.5, -0.5)
+
+      // drawing canvas overlaying main canvas
+      this.drawingLayer.canvas = this.$refs.drawinglayer
+      this.drawingLayer.canvas.width = this.drawingLayer.canvas.height = this.main.canvas.width
+      this.drawingLayer.ctx = this.drawingLayer.canvas.getContext('2d')
+      this.drawingLayer.ctx.lineWidth = 16
+      this.drawingLayer.ctx.lineJoin = this.drawingLayer.ctx.lineCap = 'round'
+      // this.drawingLayer.ctx.imageSmoothingEnabled = true
+
+      // testing  target canvas with grid of faces
       this.target.canvas = this.$refs.canvastarget
       this.target.canvas.width = window.innerWidth > 800 ? 1200 : 800
       this.target.canvas.height = window.innerWidth > 800 ? 400 : 400
       this.target.ctx = this.target.canvas.getContext('2d')
+      this.target.ctx.imageSmoothingEnabled = true
+      // face grid sidelenght
       const sidelen = window.innerWidth > 800 ? 80 : 100
 
       const tx = ~~(this.target.canvas.width / sidelen)
@@ -249,9 +264,9 @@ export default {
         ~~(Math.random() * this.randomImagesIds.length)
       ]
       let i = 0
+      // loading random faces
       for (let x = 0; x < tx; x++) {
         for (let y = 0; y < ty; y++) {
-          // when position matches random id, use reference image
           const url = `faces/${this.randomImagesIds[i]}.jpg`
           i++
           this.loadImage(
@@ -277,7 +292,6 @@ export default {
         ctx.drawImage(img, 0, 0, img.width, img.height, x, y, w, h)
       })
     },
-
     setActionState(state) {
       this.$store.dispatch('setUIState', {
         selectedAction: state
@@ -335,7 +349,6 @@ export default {
 
       formData.append('referenceimage', targetBlob, 'refimg.jpg')
       formData.append('targetimage', sourceBlob, 'targetimg.jpg')
-      console.log(targetBlob, sourceBlob)
       try {
         const result = await fetch(lambdaAppURL, {
           method: 'POST',
@@ -355,7 +368,6 @@ export default {
           refImg: targetBlob
         })
       } catch (error) {
-        console.log('noface', error)
         this.$store.dispatch('setUIState', {
           isLoadingResult: false
         })
@@ -371,7 +383,6 @@ export default {
     rollBack() {
       if (this.layers.size <= 0) {
         this.enableUndoButton = false
-        console.log('no more layers')
         return
       }
       // clear current layer
@@ -379,40 +390,58 @@ export default {
       this.layers.delete(ids[ids.length - 1])
       this.enableUndoButton = !(this.layers.size <= 0)
 
-      this.clearLayer()
+      // clear main canvas
       this.clearCanvas()
+      // redraw target image
+      this.drawTargetImage()
+      // draw all layers after pop last layer
+      this.drawLayers()
+      // draw layer to main canvas
+      this.main.ctx.drawImage(this.layer.canvas, 0, 0)
+    },
+    drawLayers() {
+      const tempcanvas = document.createElement('canvas')
+      tempcanvas.width = 512
+      tempcanvas.height = 512
+      const tempctx = tempcanvas.getContext('2d')
+      tempctx.lineJoin = tempctx.lineCap = 'round'
+      // tempctx.translate(0.5, 0.5)
 
+      this.clearLayer()
+
+      // iterate over layers array
       Array.from(this.layers.values()).forEach((layer) => {
-        this.layer.ctx.strokeStyle = layer.color
-        this.layer.ctx.lineWidth = layer.size
-        this.layer.ctx.globalAlpha = layer.opacity
-
+        // clear temp canvas
+        tempctx.clearRect(
+          0,
+          0,
+          this.layer.canvas.width,
+          this.layer.canvas.height
+        )
+        tempctx.strokeStyle = layer.color
+        tempctx.lineWidth = layer.size
         layer.points.forEach((point, i) => {
           if (i <= 0) {
-            this.layer.ctx.beginPath()
-            this.layer.ctx.moveTo(point[0], point[1])
+            tempctx.beginPath()
+            tempctx.moveTo(point[0], point[1])
           }
-          this.layer.ctx.lineTo(point[0], point[1])
-          this.layer.ctx.stroke()
+          tempctx.lineTo(point[0], point[1])
+          tempctx.stroke()
         })
+
+        // opacity before drawing final path on temp cavas
+        this.layer.ctx.globalAlpha = layer.opacity
+        this.layer.ctx.drawImage(tempcanvas, 0, 0)
         // reset alpha after drawing on ctx
-        this.layer.ctx.globalAlpha = 1.0
       })
-
-      this.main.ctx.drawImage(
-        this.currTargetImg,
+    },
+    clearDrawingLayer() {
+      this.drawingLayer.ctx.clearRect(
         0,
         0,
-        this.currTargetImg.width,
-        this.currTargetImg.height,
-        0,
-        0,
-        this.main.canvas.width,
-        this.currTargetImg.height *
-          (this.main.canvas.width / this.currTargetImg.width)
+        this.drawingLayer.canvas.width,
+        this.drawingLayer.canvas.height
       )
-
-      this.main.ctx.drawImage(this.layer.canvas, 0, 0)
     },
     clearLayer() {
       this.layer.ctx.clearRect(
@@ -433,8 +462,10 @@ export default {
     clearAll() {
       this.layers = new Map()
       this.currLayerId = null
+      this.enableUndoButton = false
       this.clearLayer()
       this.clearCanvas()
+      this.clearDrawingLayer()
     },
     mouseEvent(event) {
       event.preventDefault()
@@ -460,73 +491,60 @@ export default {
         this.$store.dispatch('setUIState', {
           isDrawing: false
         })
+
+        this.clearCanvas()
+        this.drawTargetImage()
+        this.layer.ctx.globalAlpha = this.UIState.selectedOpacity
+        this.layer.ctx.drawImage(this.drawingLayer.canvas, 0, 0)
+        this.clearDrawingLayer()
+
+        this.main.ctx.drawImage(this.layer.canvas, 0, 0)
       } else if (eventType === 'mousedown' || eventType === 'touchstart') {
-        this.currLayerId = nanoid()
-        this.layers.set(this.currLayerId, {
-          size: this.UIState.selectedStrokeWeight,
-          color: this.UIState.selectedColor,
-          opacity: this.UIState.selectedOpacity,
-          points: []
-        })
-        this.enableUndoButton = true
         this.$store.dispatch('setUIState', {
           isDrawing: true
         })
-        this.penSet = false
+        this.lastMouse = {
+          x: posx * this.main.canvas.width,
+          y: posy * this.main.canvas.height
+        }
+        this.currLayerId = nanoid()
+        const size = this.UIState.selectedStrokeWeight
+        const color = this.UIState.selectedColor
+        const opacity = this.UIState.selectedOpacity
+        this.layers.set(this.currLayerId, {
+          size,
+          color,
+          opacity,
+          points: []
+        })
+        this.enableUndoButton = true
+        this.drawingLayer.ctx.strokeStyle = color
+        this.drawingLayer.ctx.lineWidth = size
+        this.drawingLayer.canvas.style.opacity = opacity
       } else if (
         (eventType === 'mousemove' || eventType === 'touchmove') &&
         this.isDrawing
       ) {
-        // const bodyRect = document.body.getBoundingClientRect();/
-        this.layers
-          .get(this.currLayerId)
-          .points.push([
-            posx * this.main.canvas.width,
-            posy * this.main.canvas.height
-          ])
+        const currLayer = this.layers.get(this.currLayerId)
+        currLayer.points.push([
+          posx * this.main.canvas.width,
+          posy * this.main.canvas.height
+        ])
+        this.drawingLayer.ctx.beginPath()
+        this.drawingLayer.ctx.moveTo(this.lastMouse.x, this.lastMouse.y)
+        this.drawingLayer.ctx.lineTo(
+          posx * this.main.canvas.width,
+          posy * this.main.canvas.height
+        )
+        this.drawingLayer.ctx.stroke()
 
-        // console.log("DRAW", this.history.points);
-        this.draw()
+        this.lastMouse = {
+          x: posx * this.main.canvas.width,
+          y: posy * this.main.canvas.height
+        }
       }
     },
-    draw() {
-      const currLayer = this.layers.get(this.currLayerId)
-      const points = currLayer.points
-      const pos = points.length - 1
-      this.layer.ctx.strokeStyle = currLayer.color
-      this.layer.ctx.lineWidth = currLayer.size
-      this.layer.ctx.globalAlpha = currLayer.opacity
 
-      if (!this.penSet) {
-        this.penSet = true
-        this.layer.ctx.beginPath()
-        this.layer.ctx.moveTo(points[pos][0], points[pos][1])
-      }
-      this.layer.ctx.lineTo(points[pos][0], points[pos][1])
-      this.layer.ctx.stroke()
-      this.layer.ctx.globalAlpha = 1.0
-
-      this.main.ctx.clearRect(
-        0,
-        0,
-        this.main.canvas.width,
-        this.main.canvas.height
-      )
-      this.main.ctx.drawImage(
-        this.currTargetImg,
-        0,
-        0,
-        this.currTargetImg.width,
-        this.currTargetImg.height,
-        0,
-        0,
-        this.main.canvas.width,
-        this.currTargetImg.height *
-          (this.main.canvas.width / this.currTargetImg.width)
-      )
-      this.main.ctx.drawImage(this.layer.canvas, 0, 0)
-      // this.main.ctx.globalAlpha = 1.0
-    },
     loadTargetImage() {
       const imgData = `faces/${this.targetImageId}.jpg`
       return new Promise((resolve, reject) => {
@@ -544,6 +562,9 @@ export default {
     // draw target image on canvas
     async updateTargetImage() {
       this.currTargetImg = await this.loadTargetImage()
+      this.drawTargetImage()
+    },
+    drawTargetImage() {
       this.main.ctx.drawImage(
         this.currTargetImg,
         0,

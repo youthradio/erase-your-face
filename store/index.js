@@ -40,7 +40,7 @@ export const mutations = {
     state.toolsData = Object.assign({}, data.toolsData)
     state.UIState.selectedAction = 'none'
     state.UIState.selectedColor = state.toolsData.colors[4]
-    state.UIState.selectedOpacity = 1
+    state.UIState.selectedOpacity = 1.0
     state.UIState.isDrawing = false
 
     state.UIState.selectedStrokeWeight = state.toolsData.strokeWeight[3]
