@@ -19,14 +19,13 @@
       <canvas
         ref="canvas"
         tabindex="0"
-        @touchstart.prevent="mouseEvent"
-        @touchend.prevent="mouseEvent"
-        @touchmove.prevent="mouseEvent"
-        @touchcancel.prevent="mouseEvent"
-        @mousedown.prevent="mouseEvent"
-        @mouseup.prevent="mouseEvent"
-        @mousemove.prevent="mouseEvent"
-        @mouseout.prevent="mouseEvent"
+        @pointercancel.prevent="mouseEvent"
+        @pointerdown.prevent="mouseEvent"
+        @pointerup.prevent="mouseEvent"
+        @pointermove.prevent="mouseEvent"
+        @pointerout.prevent="mouseEvent"
+        @pointerleave.prevent="mouseEvent"
+        @touchmove.prevent=""
       ></canvas>
       <canvas
         ref="drawinglayer"
@@ -495,23 +494,16 @@ export default {
     mouseEvent(event) {
       event.preventDefault()
       const rect = event.target.getBoundingClientRect()
-      const posx =
-        ((event.pageX || event.touches[0].pageX) -
-          (rect.left + document.documentElement.scrollLeft)) /
-        rect.width
-
-      const posy =
-        ((event.pageY || event.touches[0].pageY) -
-          (rect.top + document.documentElement.scrollTop)) /
-        rect.height
+      const posx = event.layerX / rect.width
+      const posy = event.layerY / rect.height
 
       if (!this.isReadytoDraw || this.isLoadingResult) return
       const eventType = event.type
       if (
-        eventType === 'mouseup' ||
-        eventType === 'touchend' ||
-        eventType === 'touchcancel' ||
-        eventType === 'mouseout'
+        eventType === 'pointerup' ||
+        eventType === 'pointerleave' ||
+        eventType === 'pointercancel' ||
+        eventType === 'pointerout'
       ) {
         this.$store.dispatch('setUIState', {
           isDrawing: false
@@ -519,7 +511,9 @@ export default {
 
         this.clearCanvas()
         this.drawTargetImage()
-        this.layer.ctx.globalAlpha = this.UIState.selectedOpacity
+        this.layer.ctx.globalAlpha = this.brushMode
+          ? this.UIState.selectedOpacity
+          : 1
         this.layer.ctx.globalCompositeOperation = this.brushMode
           ? 'source-over'
           : 'destination-out'
@@ -528,7 +522,7 @@ export default {
         this.clearDrawingLayer()
 
         this.main.ctx.drawImage(this.layer.canvas, 0, 0)
-      } else if (eventType === 'mousedown' || eventType === 'touchstart') {
+      } else if (eventType === 'pointerdown') {
         this.$store.dispatch('setUIState', {
           isDrawing: true
         })
@@ -561,14 +555,8 @@ export default {
         }
         this.drawingTempLayer.ctx.strokeStyle = this.brushMode ? color : 'black'
         this.drawingTempLayer.ctx.lineWidth = size
-        this.drawingTempLayer.canvas.style.opacity = this.brushMode
-          ? opacity
-          : 1.0
         this.drawingLayer.canvas.style.opacity = this.brushMode ? opacity : 1.0
-      } else if (
-        (eventType === 'mousemove' || eventType === 'touchamove') &&
-        this.isDrawing
-      ) {
+      } else if (eventType === 'pointermove' && this.isDrawing) {
         const currLayer = this.layers.get(this.currLayerId)
         currLayer.points.push([
           posx * this.main.canvas.width,
