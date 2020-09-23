@@ -1,5 +1,7 @@
 <template>
   <div ref="container">
+    <div id="interactive" ref="interactivecontainer"></div>
+
     <div class="flex justify-between items-end pa1 bg-black">
       <BrushesComponent />
       <div>
@@ -9,7 +11,7 @@
           alt="Undo"
           title="Undo"
           href="#"
-          @click.prevent="setActionState('undo')"
+          @click.prevent="setUIState({ selectedAction: 'undo' })"
         >
           <UndoButton />
         </a>
@@ -39,7 +41,7 @@
           !UIState.isLoadingResult ? 'grow' : 'o-50'
         ]"
         href="#"
-        @click.prevent="setActionState('clear-canvas')"
+        @click.prevent="setUIState({ selectedAction: 'clear-canvas' })"
       >
         {{ !UIState.isLoadingResult ? 'CLEAR' : 'LOADING' }}
       </a>
@@ -49,7 +51,7 @@
           !UIState.isLoadingResult ? 'grow' : 'o-50'
         ]"
         href="#"
-        @click.prevent="setActionState('another-face')"
+        @click.prevent="setUIState({ selectedAction: 'another-face' })"
       >
         {{ !UIState.isLoadingResult ? 'ANOTHER FACE' : 'LOADING' }}
       </a>
@@ -59,12 +61,12 @@
           !UIState.isLoadingResult ? 'grow' : 'o-50'
         ]"
         href="#"
-        @click.prevent="setActionState('submit-test')"
+        @click.prevent="setUIState({ selectedAction: 'submit-test' })"
       >
         {{ !UIState.isLoadingResult ? 'SUBMIT' : 'LOADING' }}
       </a>
     </div>
-
+    <div id="result" ref="resultcontainer"></div>
     <div class="full-width relative mw9">
       <canvas ref="canvastarget" class="canvas-target" tabindex="0"></canvas>
       <div
@@ -161,13 +163,12 @@ export default {
     }
   },
   watch: {
-    'UIState.selectedAction'(action) {
+    async 'UIState.selectedAction'(action) {
       if (action === 'undo') {
         this.rollBack()
         // clean action state so it triggers watch again
-        this.$store.dispatch('setUIState', {
-          selectedAction: null
-        })
+
+        this.setUIState({ selectedAction: null })
       } else if (action === 'another-face') {
         // random position for reference image
         this.targetImageId = this.randomImagesIds[
@@ -175,9 +176,9 @@ export default {
         ]
         this.clearAll()
         this.updateTargetImage()
-        this.$store.dispatch('setUIState', {
-          selectedAction: null
-        })
+
+        this.setUIState({ selectedAction: null })
+
         this.$store.dispatch('setResultState', {
           loading: false,
           result: null,
@@ -187,18 +188,21 @@ export default {
       } else if (action === 'submit-test') {
         // if it's not loading
         if (!this.isLoadingResult) {
-          this.testImages()
+          await this.testImages()
           // clean action state so it triggers watch again
+          this.$refs.resultcontainer.scrollIntoView({ behavior: 'smooth' })
         }
-        this.$store.dispatch('setUIState', {
-          selectedAction: null
-        })
+        this.setUIState({ selectedAction: null })
       } else if (action === 'clear-canvas') {
         this.clearAll()
         this.updateTargetImage()
-        this.$store.dispatch('setUIState', {
-          selectedAction: null
-        })
+
+        this.setUIState({ selectedAction: null })
+      } else if (action === 'try-again') {
+        this.$refs.interactivecontainer.scrollIntoView({ behavior: 'smooth' })
+        this.setUIState({ selectedAction: null })
+
+        // this.setUIState({ selectedAction: 'another-face' })
       }
     }
   },
@@ -206,9 +210,7 @@ export default {
     document.addEventListener('keydown', (event) => {
       if (event.code === 'KeyZ' && (event.ctrlKey || event.metaKey)) {
         this.rollBack()
-        this.$store.dispatch('setUIState', {
-          selectedAction: null
-        })
+        this.setUIState({ selectedAction: null })
       }
     })
     this.initCanvases()
@@ -304,10 +306,8 @@ export default {
         ctx.drawImage(img, 0, 0, img.width, img.height, x, y, w, h)
       })
     },
-    setActionState(state) {
-      this.$store.dispatch('setUIState', {
-        selectedAction: state
-      })
+    setUIState(state) {
+      this.$store.dispatch('setUIState', { ...state })
     },
     dataURLtoBlob(dataurl) {
       const arr = dataurl.split(',')
@@ -321,9 +321,7 @@ export default {
       return new Blob([u8arr], { type: mime })
     },
     async testImages() {
-      this.$store.dispatch('setUIState', {
-        isLoadingResult: true
-      })
+      this.setUIState({ isLoadingResult: true })
 
       const canvas = document.createElement('canvas')
       const ctx = canvas.getContext('2d')
@@ -370,10 +368,7 @@ export default {
             'Content-Type': 'multipart/form-data'
           }
         }).then((res) => res.json())
-
-        this.$store.dispatch('setUIState', {
-          isLoadingResult: false
-        })
+        this.setUIState({ isLoadingResult: false })
         this.$store.dispatch('setResultState', {
           loading: false,
           result,
@@ -381,9 +376,7 @@ export default {
           refImg: targetBlob
         })
       } catch (error) {
-        this.$store.dispatch('setUIState', {
-          isLoadingResult: false
-        })
+        this.setUIState({ isLoadingResult: false })
         this.$store.dispatch('setResultState', {
           loading: false,
           result: null,
@@ -497,10 +490,7 @@ export default {
         eventType === 'pointercancel' ||
         eventType === 'pointerout'
       ) {
-        this.$store.dispatch('setUIState', {
-          isDrawing: false
-        })
-
+        this.setUIState({ isDrawing: false })
         this.clearCanvas(this.main)
         this.drawImage(this.main, this.currTargetImg)
         this.layer.ctx.globalAlpha = this.brushMode
@@ -515,9 +505,7 @@ export default {
         this.clearCanvas(this.drawingTempLayer)
         this.main.ctx.drawImage(this.layer.canvas, 0, 0)
       } else if (eventType === 'pointerdown') {
-        this.$store.dispatch('setUIState', {
-          isDrawing: true
-        })
+        this.setUIState({ isDrawing: true })
         this.lastMouse = {
           x: posx * this.main.canvas.width,
           y: posy * this.main.canvas.height
@@ -615,5 +603,14 @@ canvas {
 .face {
   position: absolute;
   opacity: 0.5;
+}
+[id]::before {
+  content: '';
+  z-index: -100;
+  pointer-events: none;
+  display: block;
+  height: 69px;
+  margin-top: -69px;
+  visibility: hidden;
 }
 </style>

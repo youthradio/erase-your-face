@@ -1,6 +1,6 @@
 <template>
   <div v-if="!isLoadingResult && !isFirstTime" ref="container">
-    <h1 v-if="testResult.result" id="result" ref="result">RESULTS</h1>
+    <h1 v-if="testResult.result" ref="result">RESULTS</h1>
     <h2 v-if="testResult.loading">LOADING</h2>
     <div class="flex">
       <div class="w-40 ph1">
@@ -22,6 +22,15 @@
       </div>
     </div>
     <h3 v-if="testResult.error">{{ testResult.error }}</h3>
+    <div class="flex justify-end">
+      <a
+        class="pa1 ba br-pill bw1 b tc f7 f5-ns no-underline b--black black grow"
+        href="#"
+        @click.prevent="setUIState({ selectedAction: 'try-again' })"
+      >
+        TRY AGAIN
+      </a>
+    </div>
   </div>
 </template>
 
@@ -65,7 +74,6 @@ export default {
         if (this.testResult) {
           await this.drawResult()
         }
-        this.$refs.container.scrollIntoView({ behavior: 'smooth' })
       }
     }
   },
@@ -155,6 +163,9 @@ export default {
         img.onerror = reject
         img.src = window.URL.createObjectURL(blob)
       })
+    },
+    setUIState(state) {
+      this.$store.dispatch('setUIState', { ...state })
     }
   }
 }
@@ -164,12 +175,5 @@ canvas {
   display: block;
   width: 100%;
   height: auto;
-}
-[id]::before {
-  content: '';
-  display: block;
-  height: 69px;
-  margin-top: -69px;
-  visibility: hidden;
 }
 </style>
