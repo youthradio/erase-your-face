@@ -123,6 +123,7 @@ export default {
       target: { canvas: null, ctx: null },
       layer: { canvas: null, ctx: null },
       drawingLayer: { canvas: null, ctx: null },
+      drawingTempLayer: { canvas: null, ctx: null },
       lastMouse: {},
       currTargetImgBlob: null,
       currTargetImg: null,
@@ -242,6 +243,13 @@ export default {
       this.drawingLayer.ctx = this.drawingLayer.canvas.getContext('2d')
       this.drawingLayer.ctx.lineWidth = 16
       this.drawingLayer.ctx.lineJoin = this.drawingLayer.ctx.lineCap = 'round'
+
+      this.drawingTempLayer.canvas = document.createElement('canvas')
+      this.drawingTempLayer.canvas.width = this.drawingTempLayer.canvas.height = this.main.canvas.width
+      this.drawingTempLayer.ctx = this.drawingTempLayer.canvas.getContext('2d')
+      this.drawingTempLayer.ctx.lineWidth = 16
+      this.drawingTempLayer.ctx.lineJoin = this.drawingTempLayer.ctx.lineCap =
+        'round'
       // this.drawingLayer.ctx.translate(0.5, 0.5)
 
       this.drawingLayer.ctx.imageSmoothingEnabled = true
@@ -453,6 +461,12 @@ export default {
         this.drawingLayer.canvas.width,
         this.drawingLayer.canvas.height
       )
+      this.drawingTempLayer.ctx.clearRect(
+        0,
+        0,
+        this.drawingTempLayer.canvas.width,
+        this.drawingTempLayer.canvas.height
+      )
     },
     clearLayer() {
       this.layer.ctx.clearRect(
@@ -535,11 +549,24 @@ export default {
           points: []
         })
         this.enableUndoButton = true
-        this.drawingLayer.ctx.strokeStyle = this.brushMode ? color : 'lightgray'
-        this.drawingLayer.ctx.lineWidth = size
+
+        if (!this.brushMode) {
+          // this.drawingTempLayer.ctx.fillStyle = 'white'
+          // this.drawingTempLayer.ctx.fillRect(
+          //   0,
+          //   0,
+          //   this.drawingTempLayer.canvas.width,
+          //   this.drawingTempLayer.canvas.header
+          // )
+        }
+        this.drawingTempLayer.ctx.strokeStyle = this.brushMode ? color : 'black'
+        this.drawingTempLayer.ctx.lineWidth = size
+        this.drawingTempLayer.canvas.style.opacity = this.brushMode
+          ? opacity
+          : 1.0
         this.drawingLayer.canvas.style.opacity = this.brushMode ? opacity : 1.0
       } else if (
-        (eventType === 'mousemove' || eventType === 'touchmove') &&
+        (eventType === 'mousemove' || eventType === 'touchamove') &&
         this.isDrawing
       ) {
         const currLayer = this.layers.get(this.currLayerId)
@@ -547,13 +574,32 @@ export default {
           posx * this.main.canvas.width,
           posy * this.main.canvas.height
         ])
-        this.drawingLayer.ctx.beginPath()
-        this.drawingLayer.ctx.moveTo(this.lastMouse.x, this.lastMouse.y)
-        this.drawingLayer.ctx.lineTo(
+        this.drawingTempLayer.ctx.beginPath()
+        this.drawingTempLayer.ctx.moveTo(this.lastMouse.x, this.lastMouse.y)
+        this.drawingTempLayer.ctx.lineTo(
           posx * this.main.canvas.width,
           posy * this.main.canvas.height
         )
-        this.drawingLayer.ctx.stroke()
+        this.drawingTempLayer.ctx.stroke()
+        if (!this.brushMode) {
+          this.drawingTempLayer.ctx.globalCompositeOperation = 'source-in'
+          this.drawingTempLayer.ctx.drawImage(
+            this.currTargetImg,
+            0,
+            0,
+            this.currTargetImg.width,
+            this.currTargetImg.height,
+            0,
+            0,
+            this.main.canvas.width,
+            this.currTargetImg.height *
+              (this.drawingTempLayer.canvas.width / this.currTargetImg.width)
+          )
+          this.drawingTempLayer.ctx.globalCompositeOperation = 'source-over'
+          this.drawingLayer.ctx.drawImage(this.drawingTempLayer.canvas, 0, 0)
+        } else {
+          this.drawingLayer.ctx.drawImage(this.drawingTempLayer.canvas, 0, 0)
+        }
 
         this.lastMouse = {
           x: posx * this.main.canvas.width,
