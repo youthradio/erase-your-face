@@ -256,11 +256,11 @@ export default {
       // testing  target canvas with grid of faces
       this.target.canvas = this.$refs.canvastarget
       this.target.canvas.width = window.innerWidth > 800 ? 1200 : 800
-      this.target.canvas.height = window.innerWidth > 800 ? 400 : 400
+      this.target.canvas.height = window.innerWidth > 800 ? 300 : 300
       this.target.ctx = this.target.canvas.getContext('2d')
       this.target.ctx.imageSmoothingEnabled = true
       // face grid sidelenght
-      const sidelen = window.innerWidth > 800 ? 80 : 100
+      const sidelen = 100
 
       const tx = ~~(this.target.canvas.width / sidelen)
       const ty = ~~(this.target.canvas.height / sidelen)
@@ -328,34 +328,35 @@ export default {
       const canvas = document.createElement('canvas')
       const ctx = canvas.getContext('2d')
 
-      canvas.width = this.main.canvas.width * 0.5
-      canvas.height = this.main.canvas.height * 0.5
+      canvas.width = this.main.canvas.width
+      canvas.height = this.main.canvas.height
+      const scale = 0.5
 
       ctx.drawImage(
         this.main.canvas,
         0,
         0,
-        this.main.canvas.width * 0.5,
-        this.main.canvas.height * 0.5
+        this.main.canvas.width * scale,
+        this.main.canvas.height * scale
       )
 
-      const targetImageURL = canvas.toDataURL('image/jpeg', 1)
+      const targetImageURL = canvas.toDataURL('image/jpeg', 0.8)
 
       const targetBlob = await fetch(targetImageURL).then((res) => res.blob())
 
       // source blob is the grid with all image and reference
 
-      canvas.width = this.target.canvas.width * 0.8
-      canvas.height = this.target.canvas.height * 0.8
+      canvas.width = this.target.canvas.width
+      canvas.height = this.target.canvas.height
 
       ctx.drawImage(
         this.target.canvas,
         0,
         0,
-        this.target.canvas.width * 0.8,
-        this.target.canvas.height * 0.8
+        this.target.canvas.width,
+        this.target.canvas.height
       )
-      const sourceImageURL = canvas.toDataURL('image/jpeg', 1)
+      const sourceImageURL = canvas.toDataURL('image/jpeg', 0.8)
       const sourceBlob = await fetch(sourceImageURL).then((res) => res.blob())
       const formData = new FormData()
 
@@ -403,11 +404,15 @@ export default {
       this.enableUndoButton = !(this.layers.size <= 0)
 
       // clear main canvas
-      this.clearCanvas()
+      this.clearCanvas(this.main)
       // redraw target image
-      this.drawTargetImage()
+      this.drawImage(this.main, this.currTargetImg)
       // draw all layers after pop last layer
       this.drawLayers()
+
+      this.clearCanvas(this.drawingLayer)
+      this.clearCanvas(this.drawingTempLayer)
+
       // draw layer to main canvas
       this.main.ctx.drawImage(this.layer.canvas, 0, 0)
     },
@@ -419,7 +424,7 @@ export default {
       tempctx.lineJoin = tempctx.lineCap = 'round'
       // tempctx.translate(0.5, 0.5)
 
-      this.clearLayer()
+      this.clearCanvas(this.layer)
 
       // iterate over layers array
       Array.from(this.layers.values()).forEach((layer) => {
@@ -453,43 +458,30 @@ export default {
         // reset alpha after drawing on ctx
       })
     },
-    clearDrawingLayer() {
-      this.drawingLayer.ctx.clearRect(
+    drawImage(layer, image) {
+      layer.ctx.drawImage(
+        image,
         0,
         0,
-        this.drawingLayer.canvas.width,
-        this.drawingLayer.canvas.height
-      )
-      this.drawingTempLayer.ctx.clearRect(
+        image.width,
+        image.height,
         0,
         0,
-        this.drawingTempLayer.canvas.width,
-        this.drawingTempLayer.canvas.height
-      )
-    },
-    clearLayer() {
-      this.layer.ctx.clearRect(
-        0,
-        0,
-        this.layer.canvas.width,
-        this.layer.canvas.height
+        layer.canvas.width,
+        image.height * (layer.canvas.width / image.width)
       )
     },
-    clearCanvas() {
-      this.main.ctx.clearRect(
-        0,
-        0,
-        this.main.canvas.width,
-        this.main.canvas.height
-      )
+    clearCanvas(layer) {
+      layer.ctx.clearRect(0, 0, layer.canvas.width, layer.canvas.height)
     },
     clearAll() {
       this.layers = new Map()
       this.currLayerId = null
       this.enableUndoButton = false
-      this.clearLayer()
-      this.clearCanvas()
-      this.clearDrawingLayer()
+      this.clearCanvas(this.layer)
+      this.clearCanvas(this.main)
+      this.clearCanvas(this.drawingLayer)
+      this.clearCanvas(this.drawingTempLayer)
     },
     mouseEvent(event) {
       event.preventDefault()
@@ -509,8 +501,8 @@ export default {
           isDrawing: false
         })
 
-        this.clearCanvas()
-        this.drawTargetImage()
+        this.clearCanvas(this.main)
+        this.drawImage(this.main, this.currTargetImg)
         this.layer.ctx.globalAlpha = this.brushMode
           ? this.UIState.selectedOpacity
           : 1
@@ -519,8 +511,8 @@ export default {
           : 'destination-out'
         this.layer.ctx.drawImage(this.drawingLayer.canvas, 0, 0)
         this.layer.ctx.globalCompositeOperation = 'source-over'
-        this.clearDrawingLayer()
-
+        this.clearCanvas(this.drawingLayer)
+        this.clearCanvas(this.drawingTempLayer)
         this.main.ctx.drawImage(this.layer.canvas, 0, 0)
       } else if (eventType === 'pointerdown') {
         this.$store.dispatch('setUIState', {
@@ -544,15 +536,6 @@ export default {
         })
         this.enableUndoButton = true
 
-        if (!this.brushMode) {
-          // this.drawingTempLayer.ctx.fillStyle = 'white'
-          // this.drawingTempLayer.ctx.fillRect(
-          //   0,
-          //   0,
-          //   this.drawingTempLayer.canvas.width,
-          //   this.drawingTempLayer.canvas.header
-          // )
-        }
         this.drawingTempLayer.ctx.strokeStyle = this.brushMode ? color : 'black'
         this.drawingTempLayer.ctx.lineWidth = size
         this.drawingLayer.canvas.style.opacity = this.brushMode ? opacity : 1.0
@@ -595,7 +578,6 @@ export default {
         }
       }
     },
-
     loadTargetImage() {
       const imgData = `faces/${this.targetImageId}.jpg`
       return new Promise((resolve, reject) => {
@@ -613,21 +595,7 @@ export default {
     // draw target image on canvas
     async updateTargetImage() {
       this.currTargetImg = await this.loadTargetImage()
-      this.drawTargetImage()
-    },
-    drawTargetImage() {
-      this.main.ctx.drawImage(
-        this.currTargetImg,
-        0,
-        0,
-        this.currTargetImg.width,
-        this.currTargetImg.height,
-        0,
-        0,
-        this.main.canvas.width,
-        this.currTargetImg.height *
-          (this.main.canvas.width / this.currTargetImg.width)
-      )
+      this.drawImage(this.main, this.currTargetImg)
     }
   }
 }
