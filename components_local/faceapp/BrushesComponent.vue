@@ -4,7 +4,7 @@
       v-for="color in toolsData.colors"
       :key="color"
       href="#"
-      class="db grow"
+      class="db"
       @click.prevent="
         setUIState({
           selectedMode: 'brush',
@@ -47,7 +47,7 @@
       </svg>
     </a>
     <a
-      class="mb2 b white margins tc f7 no-underline grow"
+      class="mb2 b white margins tc f7 no-underline"
       href="#"
       @click.prevent="setUIState({ selectedMode: 'eraser' })"
     >
@@ -72,7 +72,7 @@
     </a>
     <a
       :style="{ visibility: enableUndoButton > 0 ? 'visible' : 'hidden' }"
-      class="mb2 db grow"
+      class="mb2 db"
       alt="Undo"
       title="Undo"
       href="#"
@@ -94,7 +94,7 @@
       </div>
       <span class="db f7 white"><small>OPACITY </small></span>
     </div>
-    <!-- <a class="ma1 grow" href="#">
+    <!-- <a class="ma1" href="#">
             <svg
               class="db w-100"
               width="20"
@@ -136,7 +136,7 @@
             </svg>
           </a>
           <a
-            class="b white margins tc f7 no-underline grow"
+            class="b white margins tc f7 no-underline"
             href="#"
             @click.prevent="setActionState('undo')"
           >
@@ -223,6 +223,7 @@ export default {
     transform: rotate(180deg);
     width: 0.1rem;
     height: 100%;
+    max-height: 4rem;
   }
   .text-order {
     order: 0;

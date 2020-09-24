@@ -94,8 +94,12 @@
 
 <script>
 import { nanoid } from 'nanoid'
+import smoothscroll from 'smoothscroll-polyfill'
 import { lambdaAppURL } from '../../post.config'
 import BrushesComponent from './BrushesComponent.vue'
+if (process.client) {
+  smoothscroll.polyfill()
+}
 // total num on samples pictures faces
 const P_TOTAL = 1117
 export default {
