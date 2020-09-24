@@ -1,73 +1,65 @@
 <template>
   <div ref="container">
     <div id="interactive" ref="interactivecontainer"></div>
-
-    <div class="flex justify-between items-end pa1 bg-black">
-      <BrushesComponent />
-      <div>
-        <a
-          :style="{ visibility: enableUndoButton > 0 ? 'visible' : 'hidden' }"
-          class="db grow"
-          alt="Undo"
-          title="Undo"
-          href="#"
-          @click.prevent="setUIState({ selectedAction: 'undo' })"
+    <div class="br3 overflow-hidden">
+      <div class="relative ">
+        <div
+          class="flex flex-column items-center pa1 absolute top-0 left-0 z-1"
+          :style="{ pointerEvents: isDrawing ? 'none' : '' }"
         >
-          <UndoButton />
+          <BrushesComponent :enable-undo-button="enableUndoButton" />
+        </div>
+        <canvas
+          ref="canvas"
+          tabindex="0"
+          @pointercancel.prevent="mouseEvent"
+          @pointerdown.prevent="mouseEvent"
+          @pointerup.prevent="mouseEvent"
+          @pointermove.prevent="mouseEvent"
+          @pointerout.prevent="mouseEvent"
+          @pointerleave.prevent="mouseEvent"
+          @touchmove.prevent=""
+        ></canvas>
+        <canvas
+          ref="drawinglayer"
+          class="absolute top-0 left-0 pointer-events-none"
+        ></canvas>
+      </div>
+      <div class="flex justify-between items-end pa1 bg-black">
+        <a
+          :class="[
+            'db pa1 ba br-pill bw1 b tc f7 f5-ns no-underline b--white white',
+            !UIState.isLoadingResult ? 'grow' : 'o-50'
+          ]"
+          href="#"
+          @click.prevent="setUIState({ selectedAction: 'clear-canvas' })"
+        >
+          {{ !UIState.isLoadingResult ? 'CLEAR' : 'LOADING' }}
+        </a>
+        <a
+          :class="[
+            'db pa1 ba br-pill bw1 b tc f7 f5-ns no-underline b--white white',
+            !UIState.isLoadingResult ? 'grow' : 'o-50'
+          ]"
+          href="#"
+          @click.prevent="setUIState({ selectedAction: 'another-face' })"
+        >
+          {{ !UIState.isLoadingResult ? 'ANOTHER FACE' : 'LOADING' }}
+        </a>
+        <a
+          :class="[
+            'db pa1 ba br-pill bw1 b tc f7 f5-ns no-underline b--white white',
+            !UIState.isLoadingResult ? 'grow' : 'o-50'
+          ]"
+          href="#"
+          @click.prevent="setUIState({ selectedAction: 'submit-test' })"
+        >
+          {{ !UIState.isLoadingResult ? 'SUBMIT' : 'LOADING' }}
         </a>
       </div>
     </div>
-    <div class="relative">
-      <canvas
-        ref="canvas"
-        tabindex="0"
-        @pointercancel.prevent="mouseEvent"
-        @pointerdown.prevent="mouseEvent"
-        @pointerup.prevent="mouseEvent"
-        @pointermove.prevent="mouseEvent"
-        @pointerout.prevent="mouseEvent"
-        @pointerleave.prevent="mouseEvent"
-        @touchmove.prevent=""
-      ></canvas>
-      <canvas
-        ref="drawinglayer"
-        class="absolute top-0 left-0 pointer-events-none"
-      ></canvas>
-    </div>
-    <div class="flex justify-between items-end mv1">
-      <a
-        :class="[
-          'db pa1 ba br-pill bw1 b tc f7 f5-ns no-underline b--black black',
-          !UIState.isLoadingResult ? 'grow' : 'o-50'
-        ]"
-        href="#"
-        @click.prevent="setUIState({ selectedAction: 'clear-canvas' })"
-      >
-        {{ !UIState.isLoadingResult ? 'CLEAR' : 'LOADING' }}
-      </a>
-      <a
-        :class="[
-          'db pa1 ba br-pill bw1 b tc f7 f5-ns no-underline b--black black',
-          !UIState.isLoadingResult ? 'grow' : 'o-50'
-        ]"
-        href="#"
-        @click.prevent="setUIState({ selectedAction: 'another-face' })"
-      >
-        {{ !UIState.isLoadingResult ? 'ANOTHER FACE' : 'LOADING' }}
-      </a>
-      <a
-        :class="[
-          'db pa1 ba br-pill bw1 b tc f7 f5-ns no-underline b--black black',
-          !UIState.isLoadingResult ? 'grow' : 'o-50'
-        ]"
-        href="#"
-        @click.prevent="setUIState({ selectedAction: 'submit-test' })"
-      >
-        {{ !UIState.isLoadingResult ? 'SUBMIT' : 'LOADING' }}
-      </a>
-    </div>
     <div id="result" ref="resultcontainer"></div>
-    <div class="full-width relative mw9">
+    <div class="full-width relative mw9 mt3">
       <canvas ref="canvastarget" class="canvas-target" tabindex="0"></canvas>
       <div
         v-if="faceMatches || umatchedFaces"
@@ -104,14 +96,12 @@
 import { nanoid } from 'nanoid'
 import { lambdaAppURL } from '../../post.config'
 import BrushesComponent from './BrushesComponent.vue'
-import UndoButton from './UndoButton.vue'
 // total num on samples pictures faces
 const P_TOTAL = 1117
 export default {
   name: 'Canvas',
   components: {
-    BrushesComponent,
-    UndoButton
+    BrushesComponent
   },
   props: {},
   data() {
