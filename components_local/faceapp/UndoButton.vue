@@ -1,6 +1,6 @@
 <template>
   <svg
-    class="db"
+    class="db w-100"
     width="30"
     xmlns="http://www.w3.org/2000/svg"
     fill="none"

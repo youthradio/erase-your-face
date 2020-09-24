@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-column justify-between items-center">
+  <div class="flex flex-column justify-between items-baseline max-width">
     <a
       v-for="color in toolsData.colors"
       :key="color"
@@ -12,19 +12,42 @@
         })
       "
     >
-      <svg class="db mb1 w-100" width="30" viewBox="0 0 39 38">
-        <path
-          d="M19.5 36.5C9.5219 36.5 1.5 28.6285 1.5 19C1.5 9.37151
-              9.52191 1.5 19.5 1.5C29.4781 1.5 37.5 9.37151 37.5 19C37.5 28.6285
-              29.4781 36.5 19.5 36.5Z"
+      <svg
+        class="db mb2 w-100"
+        width="30"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 42 42"
+        fill="none"
+      >
+        <defs />
+        <circle
+          cx="21.301"
+          cy="21.313"
+          r="20.482"
           :fill="color"
-          :stroke="color === UIState.selectedColor ? '' : 'lightgray'"
-          stroke-width="3"
+          transform="rotate(-180 21.301 21.313)"
         />
+        <g
+          v-if="
+            color === UIState.selectedColor && UIState.selectedMode === 'brush'
+          "
+        >
+          <circle
+            cx="21.301"
+            cy="21.313"
+            r="20.482"
+            :stroke="color === '#FFFFFF' ? '#000' : '#FFF'"
+            transform="rotate(-180 21.301 21.313)"
+          />
+          <path
+            :fill="color === '#FFFFFF' ? '#000' : '#FFF'"
+            d="M28.98 14c-.51.016-.995.228-1.35.594-3.108 3.114-5.945 6.168-8.93 9.216l-3.508-2.813a1.964 1.964 0 10-2.454 3.068l4.909 3.928a1.964 1.964 0 002.618-.154c3.532-3.539 6.696-7.015 10.146-10.473A1.963 1.963 0 0028.98 14z"
+          />
+        </g>
       </svg>
     </a>
     <a
-      class="mb1 b white margins tc f7 no-underline grow"
+      class="mb2 b white margins tc f7 no-underline grow"
       href="#"
       @click.prevent="setUIState({ selectedMode: 'eraser' })"
     >
@@ -33,19 +56,23 @@
         width="30"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
-        viewBox="0 0 23 21"
+        viewBox="0 0 44 40"
       >
+        <defs />
         <path
           fill="#fff"
-          stroke="#fff"
-          stroke-width=".25"
-          d="M21.913 7.276h0c.279-.276.287-.726-.002-.986l-5.242-5.206h0c-.278-.275-.732-.283-.994.002l-14.588 14.4h0c-.279.276-.287.727.002.987l3.494 3.455a.69.69 0 00.507.197H21.406a.699.699 0 00.707-.701c0-.4-.32-.678-.707-.678H10.29l11.623-11.47zM6.667 11.957l9.495-9.387 4.25 4.203-9.495 9.387-4.25-4.203zm.172 6.789H5.375L2.588 15.99l3.085-3.05 4.25 4.202-1.62 1.604H6.838z"
+          d="M42.654 13.046c.477-.471.477-1.227 0-1.651L31.913.728c-.477-.472-1.241-.472-1.67 0L.357 30.227c-.477.472-.477 1.227 0 1.652l7.16 7.08c.24.236.526.33.86.33h33.417c.668 0 1.193-.519 1.193-1.18 0-.66-.525-1.133-1.193-1.133H18.403l24.251-23.93zm-11.6-9.817l9.07 8.968-19.811 19.588-9.07-8.968 19.81-19.588zM11.958 36.976H8.855l-5.967-5.9 6.683-6.607 9.07 8.968-3.58 3.54h-3.103z"
+        />
+        <path
+          v-if="UIState.selectedMode === 'eraser'"
+          fill="#fff"
+          d="M2 31l7.5-7.5 11 10-4.5 5H8L2 31z"
         />
       </svg>
     </a>
     <a
       :style="{ visibility: enableUndoButton > 0 ? 'visible' : 'hidden' }"
-      class="mb1 db grow"
+      class="mb2 db grow"
       alt="Undo"
       title="Undo"
       href="#"
@@ -53,8 +80,8 @@
     >
       <UndoButton />
     </a>
-    <div class="relative">
-      <div class="vertical mt2 mt4-ns">
+    <div class="vertical flex flex-column">
+      <div class="w-100 text-order">
         <input
           v-model.number="selectedOpacity"
           class="range db mb4-ns"
@@ -64,8 +91,8 @@
           value="1"
           step="0.01"
         />
-        <span class="f7 white">OPACITY </span>
       </div>
+      <span class="db f7 white"><small>OPACITY </small></span>
     </div>
     <!-- <a class="ma1 grow" href="#">
             <svg
@@ -178,20 +205,30 @@ export default {
   stroke: white;
   stroke-width: 15px;
 }
-
-.vertical {
-  writing-mode: vertical-lr;
-  transform: rotate(180deg);
-  white-space: nowrap;
-  display: inline-block;
-  overflow: visible;
+.max-width {
+  max-width: 1.2rem;
 }
-.range {
-  writing-mode: bt-lr;
-  -webkit-appearance: slider-vertical;
-  transform: rotate(180deg);
-  width: 0.5rem;
-  height: 100%;
-  min-height: 3rem;
+@media screen and (min-width: 321px) {
+  .vertical {
+    writing-mode: vertical-lr;
+    transform: rotate(180deg);
+    white-space: nowrap;
+    display: inline-block;
+    overflow: visible;
+    min-height: 4rem;
+  }
+  .range {
+    writing-mode: bt-lr;
+    -webkit-appearance: slider-vertical;
+    transform: rotate(180deg);
+    width: 0.1rem;
+    height: 100%;
+  }
+  .text-order {
+    order: 0;
+  }
+}
+.text-order {
+  order: 1;
 }
 </style>

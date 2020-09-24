@@ -1,8 +1,8 @@
 <template>
   <div ref="container">
     <div id="interactive" ref="interactivecontainer"></div>
-    <div class="br3 overflow-hidden">
-      <div class="relative ">
+    <div class="br3 overflow-hidden relative safari-border">
+      <div class="relative">
         <div
           class="flex flex-column items-center pa1 absolute top-0 left-0 z-1"
           :style="{ pointerEvents: isDrawing ? 'none' : '' }"
@@ -602,5 +602,12 @@ canvas {
   height: 69px;
   margin-top: -69px;
   visibility: hidden;
+}
+.safari-border {
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  // -webkit-backface-visibility: hidden;
+  // -moz-backface-visibility: hidden;
+  // -webkit-transform: translate3d(0, 0, 0);
+  // -moz-transform: translate3d(0, 0, 0);
 }
 </style>
