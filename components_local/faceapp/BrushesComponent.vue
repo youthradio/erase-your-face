@@ -1,5 +1,7 @@
 <template>
-  <div class="flex flex-column justify-between items-baseline max-width">
+  <div
+    class="flex flex-column justify-between items-center max-width baseline-xs"
+  >
     <a
       v-for="color in toolsData.colors"
       :key="color"
@@ -16,10 +18,9 @@
         class="db mb2 w-100"
         width="30"
         xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 42 42"
+        viewBox="0 0 46 46"
         fill="none"
       >
-        <defs />
         <circle
           cx="21.301"
           cy="21.313"
@@ -37,6 +38,7 @@
             cy="21.313"
             r="20.482"
             :stroke="color === '#FFFFFF' ? '#000' : '#FFF'"
+            stroke-width="3"
             transform="rotate(-180 21.301 21.313)"
           />
           <path
@@ -92,7 +94,7 @@
           step="0.01"
         />
       </div>
-      <span class="db f7 white"><small>OPACITY </small></span>
+      <span class="db f7 white pa1"><small>OPACITY </small></span>
     </div>
     <!-- <a class="ma1" href="#">
             <svg
@@ -209,6 +211,9 @@ export default {
   max-width: 1.2rem;
 }
 @media screen and (min-width: 321px) {
+  .baseline-xs {
+    align-items: center !important;
+  }
   .vertical {
     writing-mode: vertical-lr;
     transform: rotate(180deg);
@@ -221,7 +226,7 @@ export default {
     writing-mode: bt-lr;
     -webkit-appearance: slider-vertical;
     transform: rotate(180deg);
-    width: 0.1rem;
+    width: 10px;
     height: 100%;
     max-height: 4rem;
   }
@@ -231,5 +236,8 @@ export default {
 }
 .text-order {
   order: 1;
+}
+.baseline-xs {
+  align-items: baseline;
 }
 </style>

@@ -1,13 +1,55 @@
 <template>
   <div ref="container">
     <div id="interactive" ref="interactivecontainer"></div>
-    <div class="br3 overflow-hidden relative safari-border">
+    <div class="br3 relative safari-border">
       <div class="relative">
         <div
-          class="flex flex-column items-center pa1 absolute top-0 left-0 z-1"
+          class="flex flex-column items-center pa1 pa3-ns absolute top-0 left-0 z-1"
           :style="{ pointerEvents: isDrawing ? 'none' : '' }"
         >
           <BrushesComponent :enable-undo-button="enableUndoButton" />
+        </div>
+        <div
+          class="absolute top-0 right-0 z-1 pa1 pa3-ns"
+          :style="{ opacity: UIState.isLoadingResult ? '0.5' : '1' }"
+        >
+          <a
+            class="db f7 f5-ns no-underline b--white white grow mb2"
+            href="#"
+            @click.prevent="
+              () =>
+                !isLoadingResult
+                  ? setUIState({ selectedAction: 'another-face' })
+                  : null
+            "
+          >
+            <FaceButton />
+          </a>
+          <a
+            class="db f7 f5-ns no-underline b--white white grow"
+            href="#"
+            @click.prevent="
+              () =>
+                !isLoadingResult
+                  ? setUIState({ selectedAction: 'clear-canvas' })
+                  : null
+            "
+          >
+            <TrashButton />
+          </a>
+        </div>
+        <div class="absolute bottom-0 right-0 z-1 pa1 pa3-ns">
+          <a
+            class="db f7 f5-ns no-underline b--white white grow"
+            href="#"
+            :style="{ opacity: UIState.isLoadingResult ? '0.5' : '1' }"
+            @click.prevent="setUIState({ selectedAction: 'submit-test' })"
+          >
+            <div>
+              <SubmitButton />
+              <div>{{ UIState.isLoadingResult ? 'LOADING' : 'SUBMIT' }}</div>
+            </div>
+          </a>
         </div>
         <canvas
           ref="canvas"
@@ -24,38 +66,6 @@
           ref="drawinglayer"
           class="absolute top-0 left-0 pointer-events-none"
         ></canvas>
-      </div>
-      <div class="flex justify-between items-end pa1 bg-black">
-        <a
-          :class="[
-            'db pa1 ba br-pill bw1 b tc f7 f5-ns no-underline b--white white',
-            !UIState.isLoadingResult ? 'grow' : 'o-50'
-          ]"
-          href="#"
-          @click.prevent="setUIState({ selectedAction: 'clear-canvas' })"
-        >
-          {{ !UIState.isLoadingResult ? 'CLEAR' : 'LOADING' }}
-        </a>
-        <a
-          :class="[
-            'db pa1 ba br-pill bw1 b tc f7 f5-ns no-underline b--white white',
-            !UIState.isLoadingResult ? 'grow' : 'o-50'
-          ]"
-          href="#"
-          @click.prevent="setUIState({ selectedAction: 'another-face' })"
-        >
-          {{ !UIState.isLoadingResult ? 'ANOTHER FACE' : 'LOADING' }}
-        </a>
-        <a
-          :class="[
-            'db pa1 ba br-pill bw1 b tc f7 f5-ns no-underline b--white white',
-            !UIState.isLoadingResult ? 'grow' : 'o-50'
-          ]"
-          href="#"
-          @click.prevent="setUIState({ selectedAction: 'submit-test' })"
-        >
-          {{ !UIState.isLoadingResult ? 'SUBMIT' : 'LOADING' }}
-        </a>
       </div>
     </div>
     <div id="result" ref="resultcontainer"></div>
@@ -97,6 +107,10 @@ import { nanoid } from 'nanoid'
 import smoothscroll from 'smoothscroll-polyfill'
 import { lambdaAppURL } from '../../post.config'
 import BrushesComponent from './BrushesComponent.vue'
+import FaceButton from './FaceButton.vue'
+import SubmitButton from './SubmitButton.vue'
+import TrashButton from './TrashButton.vue'
+
 if (process.client) {
   smoothscroll.polyfill()
 }
@@ -105,7 +119,10 @@ const P_TOTAL = 1117
 export default {
   name: 'Canvas',
   components: {
-    BrushesComponent
+    BrushesComponent,
+    FaceButton,
+    SubmitButton,
+    TrashButton
   },
   props: {},
   data() {
