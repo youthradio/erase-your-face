@@ -199,6 +199,8 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@import '~@/assets/css/variables';
+
 .svg {
   box-sizing: border-box;
 }
@@ -208,9 +210,18 @@ export default {
   stroke-width: 15px;
 }
 .max-width {
-  max-width: 1.2rem;
+  max-width: 1rem;
+}
+
+@media #{$breakpoint-not-small} {
+  .max-width {
+    max-width: 2rem;
+  }
 }
 @media screen and (min-width: 321px) {
+  .max-width {
+    max-width: 1.5rem;
+  }
   .baseline-xs {
     align-items: center !important;
   }

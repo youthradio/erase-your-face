@@ -10,7 +10,7 @@
           <BrushesComponent :enable-undo-button="enableUndoButton" />
         </div>
         <div
-          class="absolute top-0 right-0 z-1 pa1 pa3-ns"
+          class="absolute top-0 right-0 z-1 pa1 pa3-ns flex flex-column items-center"
           :style="{ opacity: UIState.isLoadingResult ? '0.5' : '1' }"
         >
           <a
@@ -35,7 +35,7 @@
                   : null
             "
           >
-            <TrashButton />
+            <TrashButton class="max-width" />
           </a>
         </div>
         <div class="absolute bottom-0 right-0 z-1 pa1 pa3-ns">
@@ -600,8 +600,22 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import '~@/css/vars';
+@import '~@/assets/css/variables';
 
+.max-width {
+  max-width: 1rem;
+}
+
+@media #{$breakpoint-not-small} {
+  .max-width {
+    max-width: 2rem;
+  }
+}
+@media screen and (min-width: 321px) {
+  .max-width {
+    max-width: 1.5rem;
+  }
+}
 canvas {
   display: block;
   width: 100%;
