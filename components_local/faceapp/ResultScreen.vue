@@ -24,7 +24,7 @@
     <h3 v-if="testResult.error">{{ testResult.error }}</h3>
     <div class="flex justify-end">
       <a
-        class="pa1 ba br-pill bw1 b tc f7 f5-ns no-underline b--black black grow"
+        class="pv1 ph2 ba br-pill bw1 b tc f7 f5-ns no-underline b--white grow green bg-white grow shadow-3"
         href="#"
         @click.prevent="setUIState({ selectedAction: 'try-again' })"
       >

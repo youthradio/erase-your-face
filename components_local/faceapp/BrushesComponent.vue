@@ -1,12 +1,10 @@
 <template>
-  <div
-    class="flex flex-column justify-between items-center max-width baseline-xs"
-  >
+  <div class="flex flex-column justify-between items-center  baseline-xs">
     <a
       v-for="color in toolsData.colors"
       :key="color"
       href="#"
-      class="db"
+      class="db mb2 max-width"
       @click.prevent="
         setUIState({
           selectedMode: 'brush',
@@ -15,7 +13,7 @@
       "
     >
       <svg
-        class="db mb2 w-100"
+        class="db w-100"
         width="30"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 46 46"
@@ -94,7 +92,7 @@
           step="0.01"
         />
       </div>
-      <span class="db f7 white pa1"><small>OPACITY </small></span>
+      <span class="db f7 white pv2 pv4-ns tc"><small>OPACITY </small></span>
     </div>
     <!-- <a class="ma1" href="#">
             <svg
@@ -220,7 +218,7 @@ export default {
 }
 @media screen and (min-width: 321px) {
   .max-width {
-    max-width: 1.5rem;
+    max-width: 1.2rem;
   }
   .baseline-xs {
     align-items: center !important;
@@ -231,15 +229,14 @@ export default {
     white-space: nowrap;
     display: inline-block;
     overflow: visible;
-    min-height: 4rem;
+    // min-height: 3rem;
   }
   .range {
     writing-mode: bt-lr;
     -webkit-appearance: slider-vertical;
     transform: rotate(180deg);
-    width: 10px;
+    width: 0.4rem;
     height: 100%;
-    max-height: 4rem;
   }
   .text-order {
     order: 0;

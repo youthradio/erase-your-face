@@ -4,8 +4,13 @@
     <div class="br3 relative safari-border">
       <div class="relative">
         <div
+          class="absolute top-0 w-100 tc white lh-title tracked pointer-events-none z-1"
+        >
+          Draw Over Me
+        </div>
+        <div
           class="flex flex-column items-center pa1 pa3-ns absolute top-0 left-0 z-1"
-          :style="{ pointerEvents: isDrawing ? 'none' : '' }"
+          :style="{ pointerEvents: isDrawing ? 'none' : 'inherit' }"
         >
           <BrushesComponent :enable-undo-button="enableUndoButton" />
         </div>
@@ -40,15 +45,16 @@
         </div>
         <div class="absolute bottom-0 right-0 z-1 pa1 pa3-ns">
           <a
-            class="db f7 f5-ns no-underline b--white white grow"
+            :class="[
+              'db pv1 ph2 ba br-pill bw1 b tc f7 f5-ns no-underline b--white',
+              !UIState.isLoadingResult
+                ? 'grow green bg-white shadow-3'
+                : 'o-50 white bg-inherit'
+            ]"
             href="#"
-            :style="{ opacity: UIState.isLoadingResult ? '0.5' : '1' }"
             @click.prevent="setUIState({ selectedAction: 'submit-test' })"
           >
-            <div>
-              <SubmitButton />
-              <div>{{ UIState.isLoadingResult ? 'LOADING' : 'SUBMIT' }}</div>
-            </div>
+            {{ !UIState.isLoadingResult ? 'SUBMIT' : 'LOADING' }}
           </a>
         </div>
         <canvas
@@ -108,7 +114,6 @@ import smoothscroll from 'smoothscroll-polyfill'
 import { lambdaAppURL } from '../../post.config'
 import BrushesComponent from './BrushesComponent.vue'
 import FaceButton from './FaceButton.vue'
-import SubmitButton from './SubmitButton.vue'
 import TrashButton from './TrashButton.vue'
 
 if (process.client) {
@@ -121,7 +126,6 @@ export default {
   components: {
     BrushesComponent,
     FaceButton,
-    SubmitButton,
     TrashButton
   },
   props: {},
