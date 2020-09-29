@@ -9,7 +9,7 @@
           Draw Over Me
         </div>
         <div
-          class="flex flex-column items-center pa1 pa3-ns absolute top-0 left-0 z-1"
+          class="flex flex-column items-center absolute top-0 left-0 z-1 pa1 pa3-ns"
           :style="{ pointerEvents: isDrawing ? 'none' : 'inherit' }"
         >
           <BrushesComponent :enable-undo-button="enableUndoButton" />

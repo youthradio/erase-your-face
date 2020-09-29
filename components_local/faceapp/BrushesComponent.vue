@@ -4,7 +4,7 @@
       v-for="color in toolsData.colors"
       :key="color"
       href="#"
-      class="db mb2 max-width"
+      class="db max-width mb2"
       @click.prevent="
         setUIState({
           selectedMode: 'brush',
@@ -36,7 +36,7 @@
             cy="21.313"
             r="20.482"
             :stroke="color === '#FFFFFF' ? '#000' : '#FFF'"
-            stroke-width="3"
+            stroke-width="1"
             transform="rotate(-180 21.301 21.313)"
           />
           <path
@@ -71,7 +71,7 @@
       </svg>
     </a>
     <a
-      :style="{ visibility: enableUndoButton > 0 ? 'visible' : 'hidden' }"
+      :style="{ opacity: enableUndoButton > 0 ? 1 : 0 }"
       class="mb2 db max-width"
       alt="Undo"
       title="Undo"
@@ -84,7 +84,7 @@
       <div class="w-100 text-order">
         <input
           v-model.number="selectedOpacity"
-          class="range db mb4-ns"
+          class="range"
           type="range"
           min="0"
           max="1"
@@ -92,7 +92,7 @@
           step="0.01"
         />
       </div>
-      <span class="db f7 white pv2 pv4-ns tc"><small>OPACITY </small></span>
+      <span class="db f7 white tc pv3"><small>OPACITY </small></span>
     </div>
     <!-- <a class="ma1" href="#">
             <svg
@@ -198,7 +198,9 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import '~@/assets/css/variables';
-
+*:focus {
+  outline-width: 1;
+}
 .svg {
   box-sizing: border-box;
 }
@@ -229,13 +231,16 @@ export default {
     white-space: nowrap;
     display: inline-block;
     overflow: visible;
-    // min-height: 3rem;
+    // max-height: 5rem;
   }
   .range {
+    display: block;
+    position: relative;
     writing-mode: bt-lr;
     -webkit-appearance: slider-vertical;
     transform: rotate(180deg);
-    width: 0.4rem;
+    width: 2px;
+    -webkit-width: 0px;
     height: 100%;
   }
   .text-order {
