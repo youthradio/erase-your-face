@@ -1,7 +1,14 @@
 <template>
   <div>
     <HeaderContainer header-type="video" />
-    <main class="mw8 center ph3 mt4">
+
+    <main class="mw8 center ph3 mt4 relative">
+      <div class="absolute-ns h-100 top-0 right-1">
+        <ShareContainer
+          :title="postData.title"
+          :description="postData.summary"
+        />
+      </div>
       <article class="lh-copy measure-wide center">
         <template v-for="section in articleData.sections">
           <div :key="section.text">
@@ -68,12 +75,6 @@
           </div>
         </div>
       </article>
-
-      <ShareContainer
-        :title="postData.title"
-        :description="postData.summary"
-        class="mv3"
-      />
     </main>
     <FooterContainer />
   </div>

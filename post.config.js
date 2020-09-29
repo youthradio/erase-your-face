@@ -11,7 +11,7 @@ module.exports = {
     'https://youthradio.github.io/erase-your-face/images/social.jpg',
   featureImagePath: 'images/feature-image',
   featureImageDescription: 'Woman looking at kiosk.',
-  featureImageCaption: '(Photo: Andersen Ross Photography Inc/Getty Images)',
+  featureImageCaption: '',
   wpPostSlug: 'north-carolina-vs-vaping-companies',
   wpPostID: '60986',
   // you might not need to change

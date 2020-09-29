@@ -47,7 +47,7 @@
       </svg>
     </a>
     <a
-      class="mb2 b white margins tc f7 no-underline"
+      class="mb2 b white margins tc f7 no-underline max-width"
       href="#"
       @click.prevent="setUIState({ selectedMode: 'eraser' })"
     >
@@ -72,7 +72,7 @@
     </a>
     <a
       :style="{ visibility: enableUndoButton > 0 ? 'visible' : 'hidden' }"
-      class="mb2 db"
+      class="mb2 db max-width"
       alt="Undo"
       title="Undo"
       href="#"

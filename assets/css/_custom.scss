@@ -123,6 +123,9 @@ a:focus {
   pointer-events: none;
 }
 @media #{$breakpoint-not-small} {
+  .sticky-ns {
+    position: sticky;
+  }
   .img-texture {
     width: calc(100vw / 6);
     max-width: 300px;
