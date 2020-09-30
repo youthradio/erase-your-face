@@ -92,7 +92,7 @@
           step="0.01"
         />
       </div>
-      <span class="db f7 white tc pv3"><small>OPACITY </small></span>
+      <span class="db f7 tc pv3-ns pa0 ma0">OPACITY</span>
     </div>
     <!-- <a class="ma1" href="#">
             <svg
@@ -215,12 +215,12 @@ export default {
 
 @media #{$breakpoint-not-small} {
   .max-width {
-    max-width: 2rem;
+    max-width: auto;
   }
 }
 @media screen and (min-width: 321px) {
   .max-width {
-    max-width: 1.2rem;
+    max-width: 1.5rem;
   }
   .baseline-xs {
     align-items: center !important;

@@ -1,36 +1,46 @@
 <template>
   <div v-if="!isLoadingResult && !isFirstTime" ref="container">
-    <h1 v-if="testResult.result" ref="result">RESULTS</h1>
-    <h2 v-if="testResult.loading">LOADING</h2>
-    <div class="flex">
-      <div class="w-40 ph1">
-        <h3 class="lh-title f5 f4-ns">Reference face</h3>
+    <h3 v-if="testResult.result" class="roboto-mono green b ttu">RESULTS</h3>
+    <div class="flex flex-wrap">
+      <div class="w-40">
+        <template v-if="testResult.result.error">
+          <h3 class="mt0 lh-title f6 f5-ns mt0">
+            No face detected on reference image
+          </h3>
+        </template>
+        <template v-else>
+          <h3 class="lh-title f6 f5-ns mt0">
+            Reference face detected
+          </h3></template
+        >
         <canvas ref="refImgCanvas"></canvas>
       </div>
-      <div class="w-60 pl1 pl4-ns">
-        <h3 v-if="testResult.error" class="lh-title f5 f4-ns">
-          No face detected on reference image
-        </h3>
-        <h3 class="lh-title f5 f4-ns mb0">
-          {{ faceMatches.length > 0 ? faceMatches.length : 'No' }} Matching
-          faces
-        </h3>
-        <h4 v-if="faceMatches.length > 0" class="mt0 lh-title f7 f6-ns">
-          with similarity score
-        </h4>
-        <div ref="faceMatches" class="flex flex-wrap"></div>
+      <div class="w-60-ns w-100 pl1 pl4-ns flex flex-column justify-between">
+        <div>
+          <h3 class="lh-title f6 f5-ns mt0">
+            {{ faceMatches.length > 0 ? faceMatches.length : 'No' }} Matching
+            {{ faceMatches.length > 1 ? 'Faces' : 'Face' }}
+          </h3>
+          <h4
+            v-if="faceMatches.length > 0"
+            class="mt0 lh-title f7 f6-ns normal"
+          >
+            with similarity score
+          </h4>
+          <div ref="faceMatches" class="flex flex-wrap nl1"></div>
+        </div>
+        <div class="flex justify-end self-end">
+          <a
+            class="roboto-mono pv1 ph2 ba br-pill bw1 b tc f7 f5-ns no-underline b--white grow green bg-white grow shadow-3"
+            href="#"
+            @click.prevent="setUIState({ selectedAction: 'try-again' })"
+          >
+            TRY AGAIN
+          </a>
+        </div>
       </div>
     </div>
     <h3 v-if="testResult.error">{{ testResult.error }}</h3>
-    <div class="flex justify-end">
-      <a
-        class="pv1 ph2 ba br-pill bw1 b tc f7 f5-ns no-underline b--white grow green bg-white grow shadow-3"
-        href="#"
-        @click.prevent="setUIState({ selectedAction: 'try-again' })"
-      >
-        TRY AGAIN
-      </a>
-    </div>
   </div>
 </template>
 
@@ -61,7 +71,7 @@ export default {
       return null
     },
     faceMatches() {
-      if (this.testResult.result) {
+      if (this.testResult.result && !this.testResult.result.error) {
         return this.testResult.result.FaceMatches
       }
       return []
@@ -80,6 +90,7 @@ export default {
   mounted() {},
   methods: {
     async drawResult() {
+      if (this.testResult.result.error) return
       const [refImg, targetImg] = await Promise.all([
         this.loadImage(this.testResult.refImg),
         this.loadImage(this.testResult.targetImg)
@@ -104,8 +115,10 @@ export default {
       }
       this.faceMatches.forEach((match) => {
         const div = document.createElement('div')
-        div.className = 'ph2'
-        div.innerHTML = `<h3 class="lh-title f5">${match.Similarity.toFixed(
+        const label = document.createElement('div')
+        div.className = 'flex flex-column justify-between ph1'
+        label.className = ''
+        label.innerHTML = `<h3 class="lh-title f7 mt0 tc">${match.Similarity.toFixed(
           2
         )}%</h3>`
         const canvas = document.createElement('canvas')
@@ -120,41 +133,12 @@ export default {
         canvas.width = w
         canvas.height = h
         canvas.style.width = '100%'
-        canvas.style.maxWidth = '60px'
         canvasCtx.drawImage(targetImg, px, py, w, h, 0, 0, w, h)
         div.appendChild(canvas)
+        div.appendChild(label)
+
         this.$refs.faceMatches.appendChild(div)
       })
-      // imgs.forEach((img, i) => {
-      //   let refImgBox = this.testResult.result.SourceImageFace.BoundingBox
-      //   if (i > 0) {
-      //     if (this.testResult.result.FaceMatches.length > 0) {
-      //       faceImg = this.testResult.result.FaceMatches[0].Face
-      //     } else {
-      //       faceImg = this.testResult.result.UnmatchedFaces[0]
-      //     }
-      //   }
-      //   const refImgBox = faceImg.BoundingBox
-      //   const px = img.width * refImgBox.Left
-      //   const py = img.width * refImgBox.Top
-      //   const w = img.width * refImgBox.Width
-      //   const h = img.width * refImgBox.Height
-      //   const scaledw = w * (this.result.canvas.height / h)
-      //   const scaledh = this.result.canvas.height
-      //   this.result.ctx.drawImage(
-      //     img,
-      //     px,
-      //     py,
-      //     w,
-      //     h,
-      //     i <= 0 ? 0 : this.result.canvas.width - scaledw,
-      //     0,
-      //     // w / 4,
-      //     // h / 4
-      //     scaledw,
-      //     scaledh
-      //   )
-      // })
     },
     loadImage(blob) {
       return new Promise((resolve, reject) => {

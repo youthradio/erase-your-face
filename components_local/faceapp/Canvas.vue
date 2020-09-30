@@ -4,7 +4,7 @@
     <div class="br3 relative safari-border">
       <div class="relative">
         <div
-          class="absolute top-0 w-100 tc white lh-title tracked pointer-events-none z-1"
+          class="roboto-mono ttu absolute top-0 w-100 tc white lh-title tracked pointer-events-none z-1 mt1 mt3-ns"
         >
           Draw Over Me
         </div>
@@ -46,7 +46,7 @@
         <div class="absolute bottom-0 right-0 z-1 pa1 pa3-ns">
           <a
             :class="[
-              'db pv1 ph2 ba br-pill bw1 b tc f7 f5-ns no-underline b--white',
+              'roboto-mono db pv1 ph2 ba br-pill bw1 b tc f7 f5-ns no-underline b--white',
               !UIState.isLoadingResult
                 ? 'grow green bg-white shadow-3'
                 : 'o-50 white bg-inherit'
@@ -115,7 +115,6 @@ import { lambdaAppURL } from '../../post.config'
 import BrushesComponent from './BrushesComponent.vue'
 import FaceButton from './FaceButton.vue'
 import TrashButton from './TrashButton.vue'
-
 if (process.client) {
   smoothscroll.polyfill()
 }
@@ -193,13 +192,6 @@ export default {
         this.updateTargetImage()
 
         this.setUIState({ selectedAction: null })
-
-        this.$store.dispatch('setResultState', {
-          loading: false,
-          result: null,
-          targetImg: null,
-          refImg: null
-        })
       } else if (action === 'submit-test') {
         // if it's not loading
         if (!this.isLoadingResult) {
