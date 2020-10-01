@@ -130,6 +130,7 @@ export default {
   props: {},
   data() {
     return {
+      isAwake: false,
       isReadytoDraw: false,
       layers: new Map(),
       enableUndoButton: false,
@@ -223,6 +224,18 @@ export default {
     this.initCanvases()
     this.updateTargetImage()
     this.isReadytoDraw = true
+    const observer = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            this.wakeup()
+            observer.disconnect()
+          }
+        })
+      },
+      { root: null, rootMargin: '50px', threshold: 1 }
+    )
+    observer.observe(this.$refs.interactivecontainer)
   },
   methods: {
     initCanvases() {
@@ -327,6 +340,9 @@ export default {
       }
       return new Blob([u8arr], { type: mime })
     },
+    async wakeup() {
+      return await fetch(lambdaAppURL + 'wakeup')
+    },
     async testImages() {
       this.setUIState({ isLoadingResult: true })
 
@@ -368,7 +384,7 @@ export default {
       formData.append('referenceimage', targetBlob, 'refimg.jpg')
       formData.append('targetimage', sourceBlob, 'targetimg.jpg')
       try {
-        const result = await fetch(lambdaAppURL, {
+        const result = await fetch(lambdaAppURL + 'push', {
           method: 'POST',
           body: formData,
           header: {
@@ -512,6 +528,10 @@ export default {
         this.clearCanvas(this.drawingTempLayer)
         this.main.ctx.drawImage(this.layer.canvas, 0, 0)
       } else if (eventType === 'pointerdown') {
+        if (!this.isAwake) {
+          this.wakeup()
+          this.isAwake = true
+        }
         this.setUIState({ isDrawing: true })
         this.lastMouse = {
           x: posx * this.main.canvas.width,

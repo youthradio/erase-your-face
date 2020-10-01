@@ -24,6 +24,5 @@ module.exports = {
     }
   ],
   dataPath: 'data/data.json',
-  lambdaAppURL:
-    'https://53fj52a3ud.execute-api.us-west-2.amazonaws.com/latest/push'
+  lambdaAppURL: 'https://53fj52a3ud.execute-api.us-west-2.amazonaws.com/latest/'
 }
