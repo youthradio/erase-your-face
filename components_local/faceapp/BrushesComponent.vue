@@ -80,7 +80,7 @@
     >
       <UndoButton />
     </a>
-    <div class="vertical flex flex-column">
+    <div class="vertical flex flex-column relative">
       <div class="w-100 text-order">
         <input
           v-model.number="selectedOpacity"
@@ -239,7 +239,7 @@ export default {
     writing-mode: bt-lr;
     -webkit-appearance: slider-vertical;
     transform: rotate(180deg);
-    width: 2px;
+    width: 10px;
     -webkit-width: 0px;
     height: 100%;
   }
@@ -252,5 +252,8 @@ export default {
 }
 .baseline-xs {
   align-items: baseline;
+}
+.small {
+  font-size: 0.5rem;
 }
 </style>
