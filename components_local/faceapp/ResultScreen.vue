@@ -10,7 +10,7 @@
         </template>
         <template v-else-if="testResult.result && testResult.result.error">
           <h3 class="mt0 lh-title f6 f5-ns ma0">
-            No face detected on reference image
+            No face detected
           </h3>
         </template>
         <template v-else-if="testResult.result">
@@ -25,7 +25,7 @@
         </template>
 
         <svg
-          v-if="isFirstTime"
+          v-if="isFirstTime || (testResult.result && testResult.result.error)"
           xmlns="http://www.w3.org/2000/svg"
           class="db w-100 pa"
           width="200"

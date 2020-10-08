@@ -63,7 +63,7 @@ export default {
   mounted() {
     // testing  target canvas with grid of faces
     this.target.canvas = this.$refs.canvastarget
-    this.target.canvas.width = 1000
+    this.target.canvas.width = window.innerWidth > 700 ? 900 : 700
     this.target.canvas.height = 300
     this.target.ctx = this.target.canvas.getContext('2d')
     this.target.ctx.imageSmoothingEnabled = true
