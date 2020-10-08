@@ -20,13 +20,14 @@
         </template>
         <template v-else>
           <h3 class="lh-title f6 f5-ns mt0">
-            ▮▮▮▮▮▮ ▮▮▮ ▮▮▮▮ ▮▮▮▮
+            ▮▮▮▮▮▮
           </h3>
         </template>
 
         <svg
           v-if="isFirstTime"
-          class="svg-grey pa"
+          xmlns="http://www.w3.org/2000/svg"
+          class="db w-100 pa"
           width="200"
           viewBox="10 0 50 50"
         >
@@ -58,13 +59,18 @@
           </template>
           <template v-else>
             <h3 class="lh-title f6 f5-ns mt0">
-              ▮▮▮▮▮▮ ▮▮▮ ▮▮▮▮ ▮▮▮▮
+              ▮▮▮▮▮▮
             </h3>
           </template>
           <div ref="faceMatches" class="flex flex-wrap">
             <template v-for="i in fakeSvgsCounter">
-              <div :key="i" class="flex flex-column justify-between">
-                <svg class="svg-grey pa" width="40" viewBox="10 0 50 60">
+              <div :key="i" class="w-25 w-33-ns">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="db w-100"
+                  width="70"
+                  viewBox="0 0 70 70"
+                >
                   <rect fill="lightgray" width="50" height="60"></rect>
                 </svg>
                 <h3 class="lh-title f7 mt0">▮▮▮▮</h3>
@@ -205,7 +211,5 @@ canvas {
 }
 .svg-grey {
   display: block;
-  width: 100%;
-  height: auto;
 }
 </style>
