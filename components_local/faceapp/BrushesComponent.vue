@@ -172,7 +172,7 @@ export default {
   },
   computed: {
     colorsPalette() {
-      if (process.client && window.window > 700) {
+      if (process.client && window.innerWidth > 700) {
         return this.toolsData.colors
       }
       return this.toolsData.colors.slice(0, 4)
