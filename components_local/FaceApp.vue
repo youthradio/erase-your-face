@@ -1,19 +1,16 @@
 <template>
-  <div>
+  <div class="full-width mw9">
     <Canvas />
-    <ResultScreen />
   </div>
 </template>
 
 <script>
 import Canvas from './faceapp/Canvas.vue'
-import ResultScreen from './faceapp/ResultScreen.vue'
 
 export default {
   name: 'FaceApp',
   components: {
-    Canvas,
-    ResultScreen
+    Canvas
   },
   computed: {},
   created() {
@@ -22,4 +19,9 @@ export default {
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.full-width {
+  margin-left: calc(max(-100vw, -64rem) / 2 + 100% / 2);
+  margin-right: calc(max(-100vw, -64rem) / 2 + 100% / 2);
+}
+</style>

@@ -1,108 +1,85 @@
 <template>
   <div ref="container">
     <div id="interactive" ref="interactivecontainer"></div>
-    <div class="br3 relative safari-border">
-      <div class="relative">
-        <div
-          class="roboto-mono ttu absolute top-0 w-100 tc white lh-title tracked pointer-events-none z-1 mt1 mt3-ns"
-        >
-          Draw Over Me
+    <div class="flex">
+      <div class="w-50">
+        <div class="br3 relative safari-border mw6">
+          <div class="relative">
+            <div
+              class="roboto-mono ttu absolute top-0 w-100 tc white lh-title tracked pointer-events-none z-1 mt1 mt3-ns"
+            >
+              Draw Over Me
+            </div>
+            <div
+              class="flex flex-column items-center absolute top-0 left-0 z-1 pa1 pa3-ns"
+              :style="{ pointerEvents: isDrawing ? 'none' : 'inherit' }"
+            >
+              <BrushesComponent :enable-undo-button="enableUndoButton" />
+            </div>
+            <div
+              class="absolute top-0 right-0 z-1 pa1 pa3-ns flex flex-column items-center"
+              :style="{ opacity: UIState.isLoadingResult ? '0.5' : '1' }"
+            >
+              <a
+                class="db f7 f5-ns no-underline b--white white grow mb2"
+                href="#"
+                @click.prevent="
+                  () =>
+                    !isLoadingResult
+                      ? setUIState({ selectedAction: 'another-face' })
+                      : null
+                "
+              >
+                <FaceButton />
+              </a>
+              <a
+                class="db f7 f5-ns no-underline b--white white grow"
+                href="#"
+                @click.prevent="
+                  () =>
+                    !isLoadingResult
+                      ? setUIState({ selectedAction: 'clear-canvas' })
+                      : null
+                "
+              >
+                <TrashButton class="max-width" />
+              </a>
+            </div>
+            <div class="absolute bottom-0 right-0 z-1 pa1 pa3-ns">
+              <a
+                :class="[
+                  'roboto-mono db pv1 ph2 ba br-pill bw1 b tc f7 f5-ns no-underline b--white',
+                  !UIState.isLoadingResult
+                    ? 'grow green bg-white shadow-3'
+                    : 'o-50 white bg-inherit'
+                ]"
+                href="#"
+                @click.prevent="setUIState({ selectedAction: 'submit-test' })"
+              >
+                {{ !UIState.isLoadingResult ? 'SUBMIT' : 'LOADING' }}
+              </a>
+            </div>
+            <canvas
+              ref="canvas"
+              tabindex="0"
+              @pointercancel.prevent="mouseEvent"
+              @pointerdown.prevent="mouseEvent"
+              @pointerup.prevent="mouseEvent"
+              @pointermove.prevent="mouseEvent"
+              @pointerout.prevent="mouseEvent"
+              @pointerleave.prevent="mouseEvent"
+              @touchmove.prevent=""
+            ></canvas>
+            <canvas
+              ref="drawinglayer"
+              class="absolute top-0 left-0 pointer-events-none"
+            ></canvas>
+          </div>
         </div>
-        <div
-          class="flex flex-column items-center absolute top-0 left-0 z-1 pa1 pa3-ns"
-          :style="{ pointerEvents: isDrawing ? 'none' : 'inherit' }"
-        >
-          <BrushesComponent :enable-undo-button="enableUndoButton" />
-        </div>
-        <div
-          class="absolute top-0 right-0 z-1 pa1 pa3-ns flex flex-column items-center"
-          :style="{ opacity: UIState.isLoadingResult ? '0.5' : '1' }"
-        >
-          <a
-            class="db f7 f5-ns no-underline b--white white grow mb2"
-            href="#"
-            @click.prevent="
-              () =>
-                !isLoadingResult
-                  ? setUIState({ selectedAction: 'another-face' })
-                  : null
-            "
-          >
-            <FaceButton />
-          </a>
-          <a
-            class="db f7 f5-ns no-underline b--white white grow"
-            href="#"
-            @click.prevent="
-              () =>
-                !isLoadingResult
-                  ? setUIState({ selectedAction: 'clear-canvas' })
-                  : null
-            "
-          >
-            <TrashButton class="max-width" />
-          </a>
-        </div>
-        <div class="absolute bottom-0 right-0 z-1 pa1 pa3-ns">
-          <a
-            :class="[
-              'roboto-mono db pv1 ph2 ba br-pill bw1 b tc f7 f5-ns no-underline b--white',
-              !UIState.isLoadingResult
-                ? 'grow green bg-white shadow-3'
-                : 'o-50 white bg-inherit'
-            ]"
-            href="#"
-            @click.prevent="setUIState({ selectedAction: 'submit-test' })"
-          >
-            {{ !UIState.isLoadingResult ? 'SUBMIT' : 'LOADING' }}
-          </a>
-        </div>
-        <canvas
-          ref="canvas"
-          tabindex="0"
-          @pointercancel.prevent="mouseEvent"
-          @pointerdown.prevent="mouseEvent"
-          @pointerup.prevent="mouseEvent"
-          @pointermove.prevent="mouseEvent"
-          @pointerout.prevent="mouseEvent"
-          @pointerleave.prevent="mouseEvent"
-          @touchmove.prevent=""
-        ></canvas>
-        <canvas
-          ref="drawinglayer"
-          class="absolute top-0 left-0 pointer-events-none"
-        ></canvas>
       </div>
-    </div>
-    <div id="result" ref="resultcontainer"></div>
-    <div class="full-width relative mw9 mt3">
-      <canvas ref="canvastarget" class="canvas-target" tabindex="0"></canvas>
-      <div
-        v-if="faceMatches || umatchedFaces"
-        class="absolute w-100 h-100 top-0 left-0"
-      >
-        <div
-          v-for="(res, i) in faceMatches"
-          :key="`facematche-${i}`"
-          class="face bg-green"
-          :style="{
-            left: `${res.Face.BoundingBox.Left * 100}%`,
-            top: `${res.Face.BoundingBox.Top * 100}%`,
-            width: `${res.Face.BoundingBox.Width * 100}%`,
-            height: `${res.Face.BoundingBox.Height * 100}%`
-          }"
-        ></div>
-        <div
-          v-for="(res, i) in umatchedFaces"
-          :key="`faceunmatche-${i}`"
-          class="face bg-red"
-          :style="{
-            left: `${res.BoundingBox.Left * 100}%`,
-            top: `${res.BoundingBox.Top * 100}%`,
-            width: `${res.BoundingBox.Width * 100}%`,
-            height: `${res.BoundingBox.Height * 100}%`
-          }"
-        ></div>
+      <div class="w-50">
+        <ResultScreen />
+        <FacesGrid ref="facegrid" />
       </div>
     </div>
   </div>
@@ -110,22 +87,21 @@
 
 <script>
 import { nanoid } from 'nanoid'
-import smoothscroll from 'smoothscroll-polyfill'
 import { lambdaAppURL } from '../../post.config'
 import BrushesComponent from './BrushesComponent.vue'
 import FaceButton from './FaceButton.vue'
 import TrashButton from './TrashButton.vue'
-if (process.client) {
-  smoothscroll.polyfill()
-}
-// total num on samples pictures faces
-const P_TOTAL = 1117
+import ResultScreen from './ResultScreen.vue'
+import FacesGrid from './FacesGrid.vue'
+
 export default {
   name: 'Canvas',
   components: {
+    FacesGrid,
     BrushesComponent,
     FaceButton,
-    TrashButton
+    TrashButton,
+    ResultScreen
   },
   props: {},
   data() {
@@ -143,9 +119,7 @@ export default {
       lastMouse: {},
       currTargetImgBlob: null,
       currTargetImg: null,
-      currTargetImgBlobNew: null,
-      targetImageId: null,
-      randomImagesIds: null
+      currTargetImgBlobNew: null
     }
   },
   computed: {
@@ -163,6 +137,12 @@ export default {
     },
     isDrawing() {
       return this.UIState.isDrawing
+    },
+    randomImagesIds() {
+      return this.$store.state.UIState.randomImagesIds
+    },
+    targetImageId() {
+      return this.$store.state.UIState.targetImageId
     },
     faceMatches() {
       if (this.$store.state.testResult.result) {
@@ -186,9 +166,12 @@ export default {
         this.setUIState({ selectedAction: null })
       } else if (action === 'another-face') {
         // random position for reference image
-        this.targetImageId = this.randomImagesIds[
-          ~~(Math.random() * this.randomImagesIds.length)
-        ]
+
+        this.setUIState({
+          targetImageId: this.randomImagesIds[
+            ~~(Math.random() * this.randomImagesIds.length)
+          ]
+        })
         this.clearAll()
         this.updateTargetImage()
 
@@ -198,7 +181,6 @@ export default {
         if (!this.isLoadingResult) {
           await this.testImages()
           // clean action state so it triggers watch again
-          this.$refs.resultcontainer.scrollIntoView({ behavior: 'smooth' })
         }
         this.setUIState({ selectedAction: null })
       } else if (action === 'clear-canvas') {
@@ -207,7 +189,6 @@ export default {
 
         this.setUIState({ selectedAction: null })
       } else if (action === 'try-again') {
-        this.$refs.interactivecontainer.scrollIntoView({ behavior: 'smooth' })
         this.setUIState({ selectedAction: null })
 
         // this.setUIState({ selectedAction: 'another-face' })
@@ -274,45 +255,6 @@ export default {
       // this.drawingLayer.ctx.translate(0.5, 0.5)
 
       this.drawingLayer.ctx.imageSmoothingEnabled = true
-
-      // testing  target canvas with grid of faces
-      this.target.canvas = this.$refs.canvastarget
-      this.target.canvas.width = window.innerWidth > 800 ? 1200 : 800
-      this.target.canvas.height = window.innerWidth > 800 ? 300 : 300
-      this.target.ctx = this.target.canvas.getContext('2d')
-      this.target.ctx.imageSmoothingEnabled = true
-      // face grid sidelenght
-      const sidelen = 100
-
-      const tx = ~~(this.target.canvas.width / sidelen)
-      const ty = ~~(this.target.canvas.height / sidelen)
-      // random unique ids
-      const randomIds = new Set()
-      while (randomIds.size < tx * ty) {
-        randomIds.add(~~(1 + Math.random() * P_TOTAL))
-      }
-      this.randomImagesIds = [...randomIds]
-
-      // random position for reference image
-      this.targetImageId = this.randomImagesIds[
-        ~~(Math.random() * this.randomImagesIds.length)
-      ]
-      let i = 0
-      // loading random faces
-      for (let x = 0; x < tx; x++) {
-        for (let y = 0; y < ty; y++) {
-          const url = `faces/${this.randomImagesIds[i]}.jpg`
-          i++
-          this.loadImage(
-            url,
-            this.target.ctx,
-            x * sidelen,
-            y * sidelen,
-            sidelen,
-            sidelen
-          )
-        }
-      }
     },
     // load image , when ready, draw on contex, postion x,y with width and height , w,h
     loadImage(url, ctx, x, y, w, h) {
@@ -367,15 +309,15 @@ export default {
 
       // source blob is the grid with all image and reference
 
-      canvas.width = this.target.canvas.width
-      canvas.height = this.target.canvas.height
+      canvas.width = this.$refs.facegrid.getCanvas().width
+      canvas.height = this.$refs.facegrid.getCanvas().height
 
       ctx.drawImage(
-        this.target.canvas,
+        this.$refs.facegrid.getCanvas(),
         0,
         0,
-        this.target.canvas.width,
-        this.target.canvas.height
+        this.$refs.facegrid.getCanvas().width,
+        this.$refs.facegrid.getCanvas().height
       )
       const sourceImageURL = canvas.toDataURL('image/jpeg', 0.8)
       const sourceBlob = await fetch(sourceImageURL).then((res) => res.blob())
@@ -636,10 +578,6 @@ canvas {
   display: block;
   width: 100%;
   height: auto;
-}
-.full-width {
-  margin-left: calc(max(-100vw, -64rem) / 2 + 100% / 2);
-  margin-right: calc(max(-100vw, -64rem) / 2 + 100% / 2);
 }
 .face {
   position: absolute;

@@ -8,7 +8,9 @@ export const state = () => ({
     selectedAction: null,
     isDrawing: null,
     selectedMode: null,
-    isLoadingResult: false
+    isLoadingResult: false,
+    randomImagesIds: null,
+    targetImageId: null
   },
   progress: null,
   toolsData: null,
@@ -44,7 +46,8 @@ export const mutations = {
     state.UIState.selectedColor = state.toolsData.colors[4]
     state.UIState.selectedOpacity = 1.0
     state.UIState.isDrawing = false
-
+    state.UIState.randomImagesIds = []
+    state.UIState.targetImageId = -1
     state.UIState.selectedStrokeWeight = state.toolsData.strokeWeight[3]
     state.progresss = 'imageSelection'
     state.testResult.loading = false

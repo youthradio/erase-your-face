@@ -1,10 +1,38 @@
 <template>
-  <div ref="container" class="relative">
-    <canvas ref="canvas" tabindex="0"> </canvas>
+  <div class="relative mt3 mw6">
+    <canvas ref="canvastarget" class="canvas-target" tabindex="0"></canvas>
+    <div
+      v-if="faceMatches || umatchedFaces"
+      class="absolute w-100 h-100 top-0 left-0"
+    >
+      <div
+        v-for="(res, i) in faceMatches"
+        :key="`facematche-${i}`"
+        class="face bg-green"
+        :style="{
+          left: `${res.Face.BoundingBox.Left * 100}%`,
+          top: `${res.Face.BoundingBox.Top * 100}%`,
+          width: `${res.Face.BoundingBox.Width * 100}%`,
+          height: `${res.Face.BoundingBox.Height * 100}%`
+        }"
+      ></div>
+      <div
+        v-for="(res, i) in umatchedFaces"
+        :key="`faceunmatche-${i}`"
+        class="face bg-red"
+        :style="{
+          left: `${res.BoundingBox.Left * 100}%`,
+          top: `${res.BoundingBox.Top * 100}%`,
+          width: `${res.BoundingBox.Width * 100}%`,
+          height: `${res.BoundingBox.Height * 100}%`
+        }"
+      ></div>
+    </div>
   </div>
 </template>
 
 <script>
+// total num on samples pictures faces
 const P_TOTAL = 1117
 
 export default {
@@ -12,40 +40,72 @@ export default {
   props: {},
   data() {
     return {
-      main: { canvas: null, ctx: null }
+      target: { canvas: null, ctx: null }
+    }
+  },
+  computed: {
+    faceMatches() {
+      if (this.$store.state.testResult.result) {
+        return this.$store.state.testResult.result.FaceMatches
+      }
+      return []
+    },
+    umatchedFaces() {
+      if (this.$store.state.testResult.result) {
+        return this.$store.state.testResult.result.UnmatchedFaces
+      }
+      return []
+    },
+    randomImagesIds() {
+      return this.$store.state.UIState.randomImagesIds
     }
   },
   mounted() {
-    this.main.canvas = this.$refs.canvas
-    this.main.canvas.width = 1200
-    this.main.canvas.height = 600
-    this.main.ctx = this.main.canvas.getContext('2d')
-    const l = 75
+    // testing  target canvas with grid of faces
+    this.target.canvas = this.$refs.canvastarget
+    this.target.canvas.width = 1000
+    this.target.canvas.height = 500
+    this.target.ctx = this.target.canvas.getContext('2d')
+    this.target.ctx.imageSmoothingEnabled = true
+    // face grid sidelenght
+    const sidelen = 100
 
-    const tx = ~~(this.main.canvas.width / l)
-    const ty = ~~(this.main.canvas.height / l)
+    const tx = ~~(this.target.canvas.width / sidelen)
+    const ty = ~~(this.target.canvas.height / sidelen)
     // random unique ids
     const randomIds = new Set()
-
     while (randomIds.size < tx * ty) {
       randomIds.add(~~(1 + Math.random() * P_TOTAL))
     }
-    const randomImages = [...randomIds]
+    // random position for reference image
+    const randomImagesIds = [...randomIds]
+
+    this.setUIState({
+      randomImagesIds,
+      targetImageId: randomImagesIds[~~(Math.random() * randomImagesIds.length)]
+    })
+
     let i = 0
+    // loading random faces
     for (let x = 0; x < tx; x++) {
       for (let y = 0; y < ty; y++) {
+        const url = `faces/${this.randomImagesIds[i]}.jpg`
+        i++
         this.loadImage(
-          `faces/${randomImages[i++]}.jpg`,
-          this.main.ctx,
-          x * l,
-          y * l,
-          l,
-          l
+          url,
+          this.target.ctx,
+          x * sidelen,
+          y * sidelen,
+          sidelen,
+          sidelen
         )
       }
     }
   },
   methods: {
+    setUIState(state) {
+      this.$store.dispatch('setUIState', { ...state })
+    },
     // load image , when ready, draw on contex, postion x,y with width and height , w,h
     loadImage(url, ctx, x, y, w, h) {
       return new Promise((resolve) => {
@@ -57,6 +117,9 @@ export default {
       }).then((img) => {
         ctx.drawImage(img, 0, 0, img.width, img.height, x, y, w, h)
       })
+    },
+    getCanvas() {
+      return this.target.canvas
     }
   }
 }
@@ -67,5 +130,9 @@ canvas {
   width: 100%;
   height: auto;
   background-color: red;
+}
+.face {
+  position: absolute;
+  opacity: 0.5;
 }
 </style>
