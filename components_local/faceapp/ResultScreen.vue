@@ -28,10 +28,9 @@
           v-if="isFirstTime"
           class="svg-grey pa"
           width="200"
-          height="200"
-          viewBox="50 0 150 220"
+          viewBox="10 0 50 50"
         >
-          <rect fill="lightgray" width="150" height="200"></rect>
+          <rect fill="lightgray" width="40" height="40"></rect>
         </svg>
         <canvas v-else ref="refImgCanvas" class=""></canvas>
       </div>
@@ -65,13 +64,8 @@
           <div ref="faceMatches" class="flex flex-wrap">
             <template v-for="i in fakeSvgsCounter">
               <div :key="i" class="flex flex-column justify-between">
-                <svg
-                  class="svg-grey pa"
-                  width="70"
-                  height="70"
-                  viewBox="0 0 60 70"
-                >
-                  <rect fill="lightgray" width="60" height="70"></rect>
+                <svg class="svg-grey pa" width="40" viewBox="10 0 50 60">
+                  <rect fill="lightgray" width="50" height="60"></rect>
                 </svg>
                 <h3 class="lh-title f7 mt0">▮▮▮▮</h3>
               </div>

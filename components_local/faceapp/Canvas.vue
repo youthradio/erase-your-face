@@ -1,8 +1,8 @@
 <template>
   <div ref="container">
     <div id="interactive" ref="interactivecontainer"></div>
-    <div class="flex flex-wrap">
-      <div class="w-50-ns center">
+    <div class="grid">
+      <div class="canvas-grid center">
         <div class="br3 relative safari-border mw5 mw6-ns">
           <div class="relative">
             <div
@@ -77,11 +77,13 @@
           </div>
         </div>
       </div>
-      <div class="w-100 w-50-ns">
+      <div class="results-grid">
         <ResultScreen />
       </div>
+      <div class="faces-grid ph2 ph3-ns">
+        <FacesGrid ref="facegrid" />
+      </div>
     </div>
-    <FacesGrid ref="facegrid" class="w-100 w-50-ns ml-auto" />
   </div>
 </template>
 
@@ -602,8 +604,38 @@ canvas {
   // -webkit-transform: translate3d(0, 0, 0);
   // -moz-transform: translate3d(0, 0, 0);
 }
-
 .grid {
   display: grid;
+  grid-template-columns: 1fr;
+}
+.canvas-grid {
+  grid-column: 1;
+  grid-row: 1;
+}
+.results-grid {
+  grid-column: 1;
+  grid-row: 2;
+}
+.faces-grid {
+  grid-column: 1;
+  grid-row: 3;
+}
+@media #{$breakpoint-not-small} {
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .canvas-grid {
+    grid-column: 1;
+    grid-row: 1/ 4;
+  }
+  .results-grid {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .faces-grid {
+    grid-column: 2;
+    grid-row: 3;
+  }
 }
 </style>
