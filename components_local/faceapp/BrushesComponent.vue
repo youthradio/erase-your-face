@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-column justify-between items-center  baseline-xs">
     <a
-      v-for="color in toolsData.colors"
+      v-for="color in colorsPalette"
       :key="color"
       href="#"
       class="db max-width mb2"
@@ -171,6 +171,12 @@ export default {
     }
   },
   computed: {
+    colorsPalette() {
+      if (process.client && window.window > 700) {
+        return this.toolsData.colors
+      }
+      return this.toolsData.colors.slice(0, 4)
+    },
     toolsData() {
       return this.$store.state.toolsData
     },
@@ -222,37 +228,33 @@ export default {
   .max-width {
     max-width: 1.5rem;
   }
-  .baseline-xs {
-    align-items: center !important;
-  }
-  .vertical {
-    writing-mode: vertical-lr;
-    transform: rotate(180deg);
-    white-space: nowrap;
-    display: inline-block;
-    overflow: visible;
-    // max-height: 5rem;
-  }
-  .range {
-    display: block;
-    position: relative;
-    writing-mode: bt-lr;
-    -webkit-appearance: slider-vertical;
-    transform: rotate(180deg);
-    width: 10px;
-    -webkit-width: 0px;
-    height: 100%;
-  }
-  .text-order {
-    order: 0;
-  }
+}
+
+.baseline-xs {
+  align-items: center !important;
+}
+.vertical {
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  display: inline-block;
+  overflow: visible;
+  // max-height: 5rem;
+}
+.range {
+  display: block;
+  position: relative;
+  writing-mode: bt-lr;
+  -webkit-appearance: slider-vertical;
+  transform: rotate(180deg);
+  width: 10px;
+  -webkit-width: 0px;
+  height: 100%;
 }
 .text-order {
-  order: 1;
+  order: 0;
 }
-.baseline-xs {
-  align-items: baseline;
-}
+
 .small {
   font-size: 0.5rem;
 }

@@ -1,12 +1,12 @@
 <template>
   <div ref="container">
     <div id="interactive" ref="interactivecontainer"></div>
-    <div class="flex">
-      <div class="w-50">
-        <div class="br3 relative safari-border mw6">
+    <div class="flex flex-wrap">
+      <div class="w-50-ns center">
+        <div class="br3 relative safari-border mw5 mw6-ns">
           <div class="relative">
             <div
-              class="roboto-mono ttu absolute top-0 w-100 tc white lh-title tracked pointer-events-none z-1 mt1 mt3-ns"
+              class="f7 f5-ns roboto-mono ttu absolute top-0 w-100 tc white lh-title tracked pointer-events-none z-1 mt1 mt3-ns"
             >
               Draw Over Me
             </div>
@@ -48,7 +48,7 @@
             <div class="absolute bottom-0 right-0 z-1 pa1 pa3-ns">
               <a
                 :class="[
-                  'roboto-mono db pv1 ph2 ba br-pill bw1 b tc f7 f5-ns no-underline b--white',
+                  'roboto-mono db pa1 ph2-ns ba br-pill bw1 b tc f7 f5-ns no-underline b--white',
                   !UIState.isLoadingResult
                     ? 'grow green bg-white shadow-3'
                     : 'o-50 white bg-inherit'
@@ -77,11 +77,11 @@
           </div>
         </div>
       </div>
-      <div class="w-50">
+      <div class="w-100 w-50-ns">
         <ResultScreen />
-        <FacesGrid ref="facegrid" />
       </div>
     </div>
+    <FacesGrid ref="facegrid" class="w-100 w-50-ns ml-auto" />
   </div>
 </template>
 
@@ -469,6 +469,9 @@ export default {
         this.clearCanvas(this.drawingLayer)
         this.clearCanvas(this.drawingTempLayer)
         this.main.ctx.drawImage(this.layer.canvas, 0, 0)
+        if (eventType === 'pointerup') {
+          this.setUIState({ selectedAction: 'submit-test' })
+        }
       } else if (eventType === 'pointerdown') {
         if (!this.isAwake) {
           this.wakeup()
@@ -598,5 +601,9 @@ canvas {
   // -moz-backface-visibility: hidden;
   // -webkit-transform: translate3d(0, 0, 0);
   // -moz-transform: translate3d(0, 0, 0);
+}
+
+.grid {
+  display: grid;
 }
 </style>

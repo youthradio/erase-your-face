@@ -1,5 +1,5 @@
 <template>
-  <div class="relative mt3 mw6">
+  <div class="relative mw6">
     <canvas ref="canvastarget" class="canvas-target" tabindex="0"></canvas>
     <div
       v-if="faceMatches || umatchedFaces"
@@ -64,7 +64,7 @@ export default {
     // testing  target canvas with grid of faces
     this.target.canvas = this.$refs.canvastarget
     this.target.canvas.width = 1000
-    this.target.canvas.height = 500
+    this.target.canvas.height = 300
     this.target.ctx = this.target.canvas.getContext('2d')
     this.target.ctx.imageSmoothingEnabled = true
     // face grid sidelenght
@@ -127,9 +127,9 @@ export default {
 
 <style lang="scss" scoped>
 canvas {
+  display: block;
   width: 100%;
   height: auto;
-  background-color: red;
 }
 .face {
   position: absolute;

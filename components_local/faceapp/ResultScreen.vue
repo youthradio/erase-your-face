@@ -1,46 +1,86 @@
 <template>
-  <div v-if="!isLoadingResult && !isFirstTime" ref="container">
-    <h3 v-if="testResult.result" class="roboto-mono green b ttu">RESULTS</h3>
-    <div class="flex flex-wrap">
-      <div class="w-40">
-        <template v-if="testResult.result.error">
+  <div ref="container">
+    <h5 class="roboto-mono green b ttu ma0 pl2">RESULTS</h5>
+    <div class="flex mh ph2">
+      <div class="w-30 w-50-ns pa2-ns">
+        <template v-if="isLoadingResult">
           <h3 class="mt0 lh-title f6 f5-ns mt0">
+            Loading...
+          </h3>
+        </template>
+        <template v-else-if="testResult.result && testResult.result.error">
+          <h3 class="mt0 lh-title f6 f5-ns ma0">
             No face detected on reference image
+          </h3>
+        </template>
+        <template v-else-if="testResult.result">
+          <h3 class="lh-title f6 f5-ns mt0">
+            Face detected
           </h3>
         </template>
         <template v-else>
           <h3 class="lh-title f6 f5-ns mt0">
-            Reference face detected
-          </h3></template
-        >
-        <canvas ref="refImgCanvas"></canvas>
-      </div>
-      <div class="w-60-ns w-100 pl1 pl4-ns flex flex-column justify-between">
-        <div>
-          <h3 class="lh-title f6 f5-ns mt0">
-            {{ faceMatches.length > 0 ? faceMatches.length : 'No' }} Matching
-            {{ faceMatches.length > 1 ? 'Faces' : 'Face' }}
+            ▮▮▮▮▮▮ ▮▮▮ ▮▮▮▮ ▮▮▮▮
           </h3>
-          <h4
-            v-if="faceMatches.length > 0"
-            class="mt0 lh-title f7 f6-ns normal"
-          >
-            with similarity score
-          </h4>
-          <div ref="faceMatches" class="flex flex-wrap nl1"></div>
-        </div>
-        <div class="flex justify-end self-end">
-          <a
-            class="roboto-mono pv1 ph2 ba br-pill bw1 b tc f7 f5-ns no-underline b--white grow green bg-white grow shadow-3"
-            href="#"
-            @click.prevent="setUIState({ selectedAction: 'try-again' })"
-          >
-            TRY AGAIN
-          </a>
+        </template>
+
+        <svg
+          v-if="isFirstTime"
+          class="svg-grey pa"
+          width="200"
+          height="200"
+          viewBox="50 0 150 220"
+        >
+          <rect fill="lightgray" width="150" height="200"></rect>
+        </svg>
+        <canvas v-else ref="refImgCanvas" class=""></canvas>
+      </div>
+      <div class="w-70 w-50-ns flex flex-column justify-between pa2-ns">
+        <div>
+          <template v-if="isLoadingResult">
+            <h3 class="lh-title f6 f5-ns ma0">
+              Loading...
+            </h3>
+            <h4 class="mt0 lh-title f7 f6-ns normal">
+              Loading...
+            </h4>
+          </template>
+          <template v-else-if="testResult.result">
+            <h3 class="lh-title f6 f5-ns ma0">
+              {{ faceMatches.length > 0 ? faceMatches.length : 'No' }} Matching
+              {{ faceMatches.length > 1 ? 'Faces' : 'Face' }}
+            </h3>
+            <h4
+              v-if="faceMatches.length > 0"
+              class="mt0 lh-title f7 f6-ns normal"
+            >
+              with similarity score
+            </h4>
+          </template>
+          <template v-else>
+            <h3 class="lh-title f6 f5-ns mt0">
+              ▮▮▮▮▮▮ ▮▮▮ ▮▮▮▮ ▮▮▮▮
+            </h3>
+          </template>
+          <div ref="faceMatches" class="flex flex-wrap">
+            <template v-for="i in fakeSvgsCounter">
+              <div :key="i" class="flex flex-column justify-between">
+                <svg
+                  class="svg-grey pa"
+                  width="70"
+                  height="70"
+                  viewBox="0 0 60 70"
+                >
+                  <rect fill="lightgray" width="60" height="70"></rect>
+                </svg>
+                <h3 class="lh-title f7 mt0">▮▮▮▮</h3>
+              </div>
+            </template>
+          </div>
         </div>
       </div>
     </div>
-    <h3 v-if="testResult.error">{{ testResult.error }}</h3>
+    <h3 v-if="testResult && testResult.error">{{ testResult.error }}</h3>
   </div>
 </template>
 
@@ -58,6 +98,12 @@ export default {
     }
   },
   computed: {
+    fakeSvgsCounter() {
+      if (process.client && window.innerWidth > 700) {
+        return Array(6)
+      }
+      return Array(4)
+    },
     isLoadingResult() {
       return this.UIState.isLoadingResult
     },
@@ -72,7 +118,11 @@ export default {
     },
     faceMatches() {
       if (this.testResult.result && !this.testResult.result.error) {
-        return this.testResult.result.FaceMatches
+        if (window.innerWidth > 700) {
+          return this.testResult.result.FaceMatches.slice(0, 6)
+        } else {
+          return this.testResult.result.FaceMatches.slice(0, 4)
+        }
       }
       return []
     }
@@ -105,10 +155,9 @@ export default {
       const w = refImg.width * refImgBox.Width
       const h = refImg.height * refImgBox.Height
 
-      canvasRef.width = w
-      canvasRef.height = h
-
-      canvasRefctx.drawImage(refImg, px, py, w, h, 0, 0, w, h)
+      canvasRef.width = 200
+      canvasRef.height = 200
+      canvasRefctx.drawImage(refImg, px, py, w, h, 0, (200 - h) / 2, w, h)
 
       while (this.$refs.faceMatches.firstChild) {
         this.$refs.faceMatches.removeChild(this.$refs.faceMatches.firstChild)
@@ -116,9 +165,9 @@ export default {
       this.faceMatches.forEach((match) => {
         const div = document.createElement('div')
         const label = document.createElement('div')
-        div.className = 'flex flex-column justify-between ph1'
+        div.className = 'flex flex-column justify-between '
         label.className = ''
-        label.innerHTML = `<h3 class="lh-title f7 mt0 tc">${match.Similarity.toFixed(
+        label.innerHTML = `<h3 class="lh-title f7 mt0">${match.Similarity.toFixed(
           2
         )}%</h3>`
         const canvas = document.createElement('canvas')
@@ -130,10 +179,10 @@ export default {
         const py = targetImg.height * matchImgBox.Top
         const w = targetImg.width * matchImgBox.Width
         const h = targetImg.height * matchImgBox.Height
-        canvas.width = w
-        canvas.height = h
+        canvas.width = 60
+        canvas.height = 70
         canvas.style.width = '100%'
-        canvasCtx.drawImage(targetImg, px, py, w, h, 0, 0, w, h)
+        canvasCtx.drawImage(targetImg, px, py, w, h, 0, (70 - h) / 2, w, h)
         div.appendChild(canvas)
         div.appendChild(label)
 
@@ -156,6 +205,11 @@ export default {
 </script>
 <style lang="scss" scoped>
 canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.svg-grey {
   display: block;
   width: 100%;
   height: auto;
