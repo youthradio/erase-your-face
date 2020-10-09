@@ -19,7 +19,7 @@
           </h3>
         </template>
         <template v-else>
-          <h3 class="lh-title f6 f5-ns mt0">
+          <h3 class="lh-title f6 f5-ns mt0 gray">
             ▮▮▮▮▮▮
           </h3>
         </template>
@@ -58,7 +58,7 @@
             </h4>
           </template>
           <template v-else>
-            <h3 class="lh-title f6 f5-ns mt0">
+            <h3 class="lh-title f6 f5-ns mt0 gray">
               ▮▮▮▮▮▮
             </h3>
           </template>
@@ -73,7 +73,7 @@
                 >
                   <rect fill="lightgray" width="50" height="60"></rect>
                 </svg>
-                <h3 class="lh-title f7 mt0">▮▮▮▮</h3>
+                <h3 class="lh-title f7 mt0 gray">▮▮▮▮▮▮</h3>
               </div>
             </template>
           </div>
