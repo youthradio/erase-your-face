@@ -134,7 +134,8 @@ export default {
         vue.transformAssetUrls.img = ['data-src', 'src']
         vue.transformAssetUrls.source = ['data-srcset', 'srcset']
       }
-    }
+    },
+    html: { minify: { collapseWhitespace: true } }
   }
   // server: {
   //   https: {
