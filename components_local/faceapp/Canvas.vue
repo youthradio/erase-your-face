@@ -122,7 +122,8 @@ export default {
       currTargetImgBlob: null,
       currTargetImg: null,
       currTargetImgBlobNew: null,
-      lastTimePointerUp: 0
+      lastTimerPointerUp: null,
+      testFetchController: null
     }
   },
   computed: {
@@ -329,12 +330,15 @@ export default {
       formData.append('referenceimage', targetBlob, 'refimg.jpg')
       formData.append('targetimage', sourceBlob, 'targetimg.jpg')
       try {
+        this.testFetchController = new AbortController()
+
         const result = await fetch(lambdaAppURL + 'push', {
           method: 'POST',
           body: formData,
           header: {
             'Content-Type': 'multipart/form-data'
-          }
+          },
+          signal: this.testFetchController.signal
         }).then((res) => res.json())
         this.setUIState({ isLoadingResult: false })
         this.$store.dispatch('setResultState', {
@@ -444,14 +448,14 @@ export default {
       this.clearCanvas(this.drawingLayer)
       this.clearCanvas(this.drawingTempLayer)
     },
-    async submitTest() {},
     mouseEvent(event) {
       event.preventDefault()
       const rect = event.target.getBoundingClientRect()
       const posx = event.layerX / rect.width
       const posy = event.layerY / rect.height
 
-      if (!this.isReadytoDraw || this.isLoadingResult) return
+      if (!this.isReadytoDraw) return
+      // if (!this.isReadytoDraw || this.isLoadingResult) return
       const eventType = event.type
       if (
         eventType === 'pointerup' ||
@@ -460,27 +464,31 @@ export default {
         eventType === 'pointerout'
       ) {
         this.setUIState({ isDrawing: false })
-        this.clearCanvas(this.main)
-        this.drawImage(this.main, this.currTargetImg)
-        this.layer.ctx.globalAlpha = this.brushMode
-          ? this.UIState.selectedOpacity
-          : 1
-        this.layer.ctx.globalCompositeOperation = this.brushMode
-          ? 'source-over'
-          : 'destination-out'
-        this.layer.ctx.drawImage(this.drawingLayer.canvas, 0, 0)
-        this.layer.ctx.globalCompositeOperation = 'source-over'
-        this.clearCanvas(this.drawingLayer)
-        this.clearCanvas(this.drawingTempLayer)
-        this.main.ctx.drawImage(this.layer.canvas, 0, 0)
         if (eventType === 'pointerup') {
-          // if(this.lastTimeOut){
-          // clearTimeout(this.lastTimeOut)
-          // }
-          this.submitTest()
+          this.clearCanvas(this.main)
+          this.drawImage(this.main, this.currTargetImg)
+          this.layer.ctx.globalAlpha = this.brushMode
+            ? this.UIState.selectedOpacity
+            : 1
+          this.layer.ctx.globalCompositeOperation = this.brushMode
+            ? 'source-over'
+            : 'destination-out'
+          this.layer.ctx.drawImage(this.drawingLayer.canvas, 0, 0)
+          this.layer.ctx.globalCompositeOperation = 'source-over'
+          this.clearCanvas(this.drawingLayer)
+          this.clearCanvas(this.drawingTempLayer)
+          this.main.ctx.drawImage(this.layer.canvas, 0, 0)
+          if (this.lastTimerPointerUp) {
+            clearTimeout(this.lastTimerPointerUp)
+          }
+          this.lastTimerPointerUp = setTimeout(() => {
+            this.setUIState({ selectedAction: 'submit-test' })
+          }, 500)
         }
-        this.lastTimeOut = Date().now
       } else if (eventType === 'pointerdown') {
+        if (this.lastTimerPointerUp) {
+          clearTimeout(this.lastTimerPointerUp)
+        }
         if (!this.isAwake) {
           this.wakeup()
           this.isAwake = true
