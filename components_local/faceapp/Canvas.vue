@@ -3,7 +3,7 @@
     <div id="interactive" ref="interactivecontainer"></div>
     <div class="grid">
       <div class="canvas-grid center">
-        <div class="br3 relative safari-border mw5 mw6-ns">
+        <div class="relative mw5 mw6-ns">
           <div class="relative">
             <div
               class="f7 f5-ns roboto-mono ttu absolute top-0 w-100 tc white lh-title tracked pointer-events-none z-1 mt1 mt3-ns"
@@ -80,7 +80,7 @@
       <div class="results-grid">
         <ResultScreen />
       </div>
-      <div class="faces-grid ph2 ph3-ns">
+      <div class="faces-grid ph2 mt-auto center">
         <FacesGrid ref="facegrid" />
       </div>
     </div>
@@ -121,7 +121,8 @@ export default {
       lastMouse: {},
       currTargetImgBlob: null,
       currTargetImg: null,
-      currTargetImgBlobNew: null
+      currTargetImgBlobNew: null,
+      lastTimePointerUp: 0
     }
   },
   computed: {
@@ -443,6 +444,7 @@ export default {
       this.clearCanvas(this.drawingLayer)
       this.clearCanvas(this.drawingTempLayer)
     },
+    async submitTest() {},
     mouseEvent(event) {
       event.preventDefault()
       const rect = event.target.getBoundingClientRect()
@@ -472,8 +474,12 @@ export default {
         this.clearCanvas(this.drawingTempLayer)
         this.main.ctx.drawImage(this.layer.canvas, 0, 0)
         if (eventType === 'pointerup') {
-          this.setUIState({ selectedAction: 'submit-test' })
+          // if(this.lastTimeOut){
+          // clearTimeout(this.lastTimeOut)
+          // }
+          this.submitTest()
         }
+        this.lastTimeOut = Date().now
       } else if (eventType === 'pointerdown') {
         if (!this.isAwake) {
           this.wakeup()
@@ -627,7 +633,7 @@ canvas {
   }
   .canvas-grid {
     grid-column: 1;
-    grid-row: 1/ 4;
+    grid-row: 1/3;
   }
   .results-grid {
     grid-column: 2;
@@ -635,7 +641,7 @@ canvas {
   }
   .faces-grid {
     grid-column: 2;
-    grid-row: 3;
+    grid-row: 2;
   }
 }
 </style>

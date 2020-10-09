@@ -2,80 +2,73 @@
   <div ref="container">
     <h5 class="roboto-mono green b ttu ma0 pl2">RESULTS</h5>
     <div class="flex mh ph2">
-      <div class="w-30 w-50-ns pa2-ns">
-        <template v-if="isLoadingResult">
-          <h3 class="mt0 lh-title f6 f5-ns mt0">
+      <div class="w-30 w-40-ns">
+        <h3 class="mt0 lh-title f6 f5-ns ma0">
+          <template v-if="isLoadingResult">
             Loading...
-          </h3>
-        </template>
-        <template v-else-if="testResult.result && testResult.result.error">
-          <h3 class="mt0 lh-title f6 f5-ns ma0">
+          </template>
+          <template v-else-if="testResult.result && testResult.result.error">
             No face detected
-          </h3>
-        </template>
-        <template v-else-if="testResult.result">
-          <h3 class="lh-title f6 f5-ns mt0">
+          </template>
+          <template v-else-if="testResult.result">
             Face detected
-          </h3>
-        </template>
-        <template v-else>
-          <h3 class="lh-title f6 f5-ns mt0 gray">
-            ▮▮▮▮▮▮
-          </h3>
-        </template>
-
+          </template>
+          <template v-else>
+            <span class="gray"> ▮▮▮▮▮▮</span>
+          </template>
+        </h3>
+        <h4 class="mt0 lh-title f7 f6-ns normal" style="visibility: hidden">
+          -
+        </h4>
         <svg
           v-if="isFirstTime || (testResult.result && testResult.result.error)"
           xmlns="http://www.w3.org/2000/svg"
           class="db w-100 pa"
           width="200"
-          viewBox="10 0 50 50"
+          viewBox="0 0 300 300"
         >
-          <rect fill="lightgray" width="40" height="40"></rect>
+          <rect fill="lightgray" width="150" height="200"></rect>
         </svg>
         <canvas v-else ref="refImgCanvas" class=""></canvas>
       </div>
-      <div class="w-70 w-50-ns flex flex-column justify-between pa2-ns">
+      <div class="w-70 w-60-ns flex flex-column justify-between">
         <div>
-          <template v-if="isLoadingResult">
-            <h3 class="lh-title f6 f5-ns ma0">
+          <h3 class="lh-title f6 f5-ns ma0">
+            <template v-if="isLoadingResult">
               Loading...
-            </h3>
-            <h4 class="mt0 lh-title f7 f6-ns normal">
-              Loading...
-            </h4>
-          </template>
-          <template v-else-if="testResult.result">
-            <h3 class="lh-title f6 f5-ns ma0">
+            </template>
+            <template v-else-if="testResult.result">
               {{ faceMatches.length > 0 ? faceMatches.length : 'No' }} Matching
               {{ faceMatches.length > 1 ? 'Faces' : 'Face' }}
-            </h3>
-            <h4
-              v-if="faceMatches.length > 0"
-              class="mt0 lh-title f7 f6-ns normal"
-            >
-              with similarity score
-            </h4>
-          </template>
-          <template v-else>
-            <h3 class="lh-title f6 f5-ns mt0 gray">
-              ▮▮▮▮▮▮
-            </h3>
-          </template>
-          <div ref="faceMatches" class="flex flex-wrap">
-            <template v-for="i in fakeSvgsCounter">
-              <div :key="i" class="w-25 w-33-ns">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="db w-100"
-                  width="70"
-                  viewBox="0 0 70 70"
-                >
-                  <rect fill="lightgray" width="50" height="60"></rect>
-                </svg>
-                <h3 class="lh-title f7 mt0 gray">▮▮▮▮▮▮</h3>
-              </div>
             </template>
+            <template v-else>
+              <span class="gray"> ▮▮▮▮▮▮</span>
+            </template>
+          </h3>
+          <h4 class="mt0 lh-title f7 f6-ns normal">
+            <template v-if="isLoadingResult">
+              Loading...
+            </template>
+            <template v-else-if="faceMatches.length > 0">
+              with similarity score
+            </template>
+            <template v-else>
+              <span class="gray"> ▮▮▮▮▮▮</span>
+            </template>
+          </h4>
+
+          <div ref="faceMatches" class="flex flex-wrap">
+            <div class="w-25 w-33-ns">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="db w-100"
+                width="50"
+                height="70"
+              >
+                <rect fill="lightgray" width="50" height="70"></rect>
+              </svg>
+              <h3 class="lh-title f7 mt0 gray">▮▮▮▮▮▮</h3>
+            </div>
           </div>
         </div>
       </div>
@@ -98,12 +91,6 @@ export default {
     }
   },
   computed: {
-    fakeSvgsCounter() {
-      if (process.client && window.innerWidth > 700) {
-        return Array(6)
-      }
-      return Array(4)
-    },
     isLoadingResult() {
       return this.UIState.isLoadingResult
     },
@@ -157,7 +144,7 @@ export default {
 
       canvasRef.width = 200
       canvasRef.height = 200
-      canvasRefctx.drawImage(refImg, px, py, w, h, 0, (200 - h) / 2, w, h)
+      canvasRefctx.drawImage(refImg, px, py, w, h, 0, 0, w, h)
 
       while (this.$refs.faceMatches.firstChild) {
         this.$refs.faceMatches.removeChild(this.$refs.faceMatches.firstChild)

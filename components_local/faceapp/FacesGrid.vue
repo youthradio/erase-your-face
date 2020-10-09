@@ -1,5 +1,5 @@
 <template>
-  <div class="relative mw6">
+  <div class="relative mw7">
     <canvas ref="canvastarget" class="canvas-target" tabindex="0"></canvas>
     <div
       v-if="faceMatches || umatchedFaces"
