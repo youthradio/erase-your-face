@@ -67,7 +67,7 @@
             <ul class="pa0 list">
               <template v-for="i in articleData.credits.list">
                 <li :key="i.v" class="">
-                  <b>{{ i.k }}: </b>{{ i.v }}
+                  <b>{{ i.k }}: </b><span class="p-inline" v-html="i.text" />
                 </li>
               </template>
             </ul>
@@ -138,5 +138,8 @@ summary {
     color: #fff;
     // background-color: #000;
   }
+}
+.p-inline ::v-deep p {
+  display: inline;
 }
 </style>
