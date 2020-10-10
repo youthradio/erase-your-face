@@ -27,21 +27,24 @@
             </div>
           </div>
         </template>
-        <div class="flex">
-          <div class="pa2 pa4-ns">
+        <div class="flex pb3">
+          <div class="ph3">
             <img
               :src="articleData.interview.bookpicture"
               loading="lazy"
               class="db lazy-load img-l"
             />
           </div>
-          <div class="pa2 pa4-ns">
+          <div class="ph3">
             <img
               :src="articleData.interview.biopicture"
               loading="lazy"
               class="db lazy-load img-r"
             />
           </div>
+        </div>
+        <div class="f7 green">
+          <small>Photo: Dr. Simone Browne</small>
         </div>
         <div class="mv4">
           <template v-for="i in articleData.interview.questions">
