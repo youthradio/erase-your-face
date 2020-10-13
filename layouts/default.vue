@@ -1,5 +1,5 @@
 <template>
-  <div class="sans-serif">
+  <div class="sans-serif overflow-hidden">
     <nuxt />
   </div>
 </template>
