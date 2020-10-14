@@ -35,7 +35,7 @@
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             class="db relative"
-            viewBox="0 0 2961 561"
+            viewBox="0 0 3061 561"
             :height="windowWidth > 500 ? 500 : 350"
           >
             <defs />
@@ -718,7 +718,9 @@
             class="absolute h-100 bottom-0 left-0 pointer-events-none"
             :style="svgDim"
           >
-            <div class="flex justify-around w-100 h-100 items-end">
+            <div
+              class="flex justify-around w-100 h-100 items-end legend-container"
+            >
               <template v-for="legend in legends">
                 <div
                   :key="legend"
@@ -750,7 +752,7 @@ export default {
     return {
       sb: null,
       click: false,
-      svgDim: { width: '2265px' }
+      svgDim: { width: '3061px' }
     }
   },
   computed: {
@@ -794,6 +796,11 @@ export default {
   }
   100% {
     transform: translate(10px, 0);
+  }
+}
+.legend-container {
+  div:last-child {
+    max-width: 26em;
   }
 }
 </style>
