@@ -4,8 +4,10 @@ module.exports = {
   author: "YR Media's Interactive Team with Stanford d.school",
   publishDate: 'October 20, 2020',
   location: 'Oakland, CA',
-  description: 'SEO friendly Description',
-  summary: 'SEO friendly Description',
+  description:
+    'Ever get the prickly feeling that you’re being watched? You’re probably right. Biased facial recognition and surveillance technologies are everywhere, so we created a tool to help you learn what it takes to dodge detection.',
+  summary:
+    'Ever get the prickly feeling that you’re being watched? You’re probably right. Biased facial recognition and surveillance technologies are everywhere, so we created a tool to help you learn what it takes to dodge detection.',
   url: 'https://youthradio.github.io/erase-your-face',
   featureImage:
     'https://youthradio.github.io/erase-your-face/images/social.jpg',
