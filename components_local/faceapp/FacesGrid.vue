@@ -2,7 +2,7 @@
   <div class="relative mw7">
     <canvas ref="canvastarget" class="canvas-target" tabindex="0"></canvas>
     <div
-      v-if="faceMatches || umatchedFaces"
+      v-if="(faceMatches || umatchedFaces) && bShowMasks"
       class="absolute w-100 h-100 top-0 left-0"
     >
       <div
@@ -40,7 +40,8 @@ export default {
   props: {},
   data() {
     return {
-      target: { canvas: null, ctx: null }
+      target: { canvas: null, ctx: null },
+      bShowMasks: false
     }
   },
   computed: {
@@ -58,6 +59,9 @@ export default {
     },
     randomImagesIds() {
       return this.$store.state.UIState.randomImagesIds
+    },
+    UIState() {
+      return this.$store.state.UIState
     }
   },
   mounted() {
@@ -67,42 +71,53 @@ export default {
     this.target.canvas.height = 300
     this.target.ctx = this.target.canvas.getContext('2d')
     this.target.ctx.imageSmoothingEnabled = true
-    // face grid sidelenght
-    const sidelen = 100
-
-    const tx = ~~(this.target.canvas.width / sidelen)
-    const ty = ~~(this.target.canvas.height / sidelen)
-    // random unique ids
-    const randomIds = new Set()
-    while (randomIds.size < tx * ty) {
-      randomIds.add(~~(1 + Math.random() * P_TOTAL))
-    }
-    // random position for reference image
-    const randomImagesIds = [...randomIds]
-
-    this.setUIState({
-      randomImagesIds,
-      targetImageId: randomImagesIds[~~(Math.random() * randomImagesIds.length)]
-    })
-
-    let i = 0
-    // loading random faces
-    for (let x = 0; x < tx; x++) {
-      for (let y = 0; y < ty; y++) {
-        const url = `faces/${this.randomImagesIds[i]}.jpg`
-        i++
-        this.loadImage(
-          url,
-          this.target.ctx,
-          x * sidelen,
-          y * sidelen,
-          sidelen,
-          sidelen
-        )
-      }
-    }
+    this.loadFaceGridImages()
   },
   methods: {
+    showMasks() {
+      this.bShowMasks = true
+    },
+    loadFaceGridImages() {
+      // face grid sidelenght
+      const sidelen = 100
+      this.bShowMasks = false
+      const tx = ~~(this.target.canvas.width / sidelen)
+      const ty = ~~(this.target.canvas.height / sidelen)
+      // random unique ids
+      const randomIds = new Set()
+      while (randomIds.size < tx * ty) {
+        randomIds.add(~~(1 + Math.random() * P_TOTAL))
+      }
+      // random position for reference image
+      const randomImagesIds = [...randomIds]
+
+      this.setUIState({
+        randomImagesIds,
+        targetImageId:
+          randomImagesIds[~~(Math.random() * randomImagesIds.length)]
+      })
+
+      let i = 0
+      const promises = []
+      // loading random faces
+      for (let x = 0; x < tx; x++) {
+        for (let y = 0; y < ty; y++) {
+          const url = `faces/${this.randomImagesIds[i]}.jpg`
+          i++
+          promises.push(
+            this.loadImage(
+              url,
+              this.target.ctx,
+              x * sidelen,
+              y * sidelen,
+              sidelen,
+              sidelen
+            )
+          )
+        }
+      }
+      return Promise.all(promises)
+    },
     setUIState(state) {
       this.$store.dispatch('setUIState', { ...state })
     },

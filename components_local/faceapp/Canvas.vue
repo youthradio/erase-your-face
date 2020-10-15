@@ -170,12 +170,7 @@ export default {
         this.setUIState({ selectedAction: null })
       } else if (action === 'another-face') {
         // random position for reference image
-
-        this.setUIState({
-          targetImageId: this.randomImagesIds[
-            ~~(Math.random() * this.randomImagesIds.length)
-          ]
-        })
+        this.$refs.facegrid.loadFaceGridImages()
         this.clearAll()
         this.updateTargetImage()
 
@@ -184,6 +179,8 @@ export default {
         // if it's not loading
         if (!this.isLoadingResult) {
           await this.testImages()
+          this.$refs.facegrid.showMasks()
+
           // clean action state so it triggers watch again
         }
         this.setUIState({ selectedAction: null })
