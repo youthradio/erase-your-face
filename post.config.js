@@ -8,6 +8,7 @@ module.exports = {
     'Ever get the prickly feeling that you’re being watched? You’re probably right. Biased facial recognition and surveillance technologies are everywhere, so we created a tool to help you learn what it takes to dodge detection.',
   summary:
     'Ever get the prickly feeling that you’re being watched? You’re probably right. Biased facial recognition and surveillance technologies are everywhere, so we created a tool to help you learn what it takes to dodge detection.',
+  tweetMessage: 'with @itsyrmedia and @stanforddschool',
   url: 'https://youthradio.github.io/erase-your-face',
   featureImage:
     'https://youthradio.github.io/erase-your-face/images/social.jpg',

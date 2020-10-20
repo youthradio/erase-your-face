@@ -7,6 +7,7 @@
         <ShareContainer
           :title="postData.title"
           :description="postData.summary"
+          :tweet-message="postData.tweetMessage"
         />
       </div>
       <article class="lh-copy measure-wide center">
