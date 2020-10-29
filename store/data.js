@@ -12,8 +12,8 @@ export default {
 
       // '#7966EE',
       '#8148C8',
-      '#FFFFFF'
+      '#FFFFFF',
     ],
-    strokeWeight: [2, 4, 6, 10, 20]
-  }
+    strokeWeight: [2, 4, 6, 10, 20],
+  },
 }

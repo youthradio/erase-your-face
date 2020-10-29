@@ -9,7 +9,7 @@ const utils = {
       .replace(/--+/g, '-')
       .replace(/^-+/, '')
       .replace(/-+$/, '')
-  }
+  },
 }
 
 export default utils

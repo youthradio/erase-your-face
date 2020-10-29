@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-column justify-between items-center  baseline-xs">
+  <div class="flex flex-column justify-between items-center baseline-xs">
     <a
       v-for="color in colorsPalette"
       :key="color"
@@ -8,7 +8,7 @@
       @click.prevent="
         setUIState({
           selectedMode: 'brush',
-          selectedColor: color
+          selectedColor: color,
         })
       "
     >
@@ -152,22 +152,22 @@ import UndoButton from './UndoButton.vue'
 export default {
   name: 'BrushesComponent',
   components: {
-    UndoButton
+    UndoButton,
   },
   props: {
     enableUndoButton: {
       type: Boolean,
       required: true,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
       selectedOpacity: 1,
       toolState: {
         strokeSizeMenu: false,
-        colorPickerMenu: false
-      }
+        colorPickerMenu: false,
+      },
     }
   },
   computed: {
@@ -188,18 +188,18 @@ export default {
     },
     setToolStyle() {
       return {}
-    }
+    },
   },
   watch: {
     selectedOpacity() {
       this.setUIState({ selectedOpacity: this.selectedOpacity })
-    }
+    },
   },
   methods: {
     setUIState(state) {
       this.$store.dispatch('setUIState', { ...state })
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss" scoped>

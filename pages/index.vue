@@ -54,18 +54,16 @@
               <summary class="dib pa2 bg-green ba b--green bw2">
                 <h3 class="di lh-title fa5 fa4-ns normal">
                   {{ i.question }}
-                </h3></summary
-              >
+                </h3>
+              </summary>
               <div
-                class=" ba b--green bw2 lh-copy pa2"
+                class="ba b--green bw2 lh-copy pa2"
                 v-html="i.response"
               ></div>
             </details>
             <!-- </div> -->
           </template>
-          <h3 class="roboto-mono green b ttu">
-            Credits
-          </h3>
+          <h3 class="roboto-mono green b ttu">Credits</h3>
           <div>
             <div v-html="articleData.credits.open.text" />
             <ul class="pa0 list">
@@ -100,13 +98,13 @@ export default {
     ShareContainer,
     FooterContainer,
     FaceApp,
-    Infographic
+    Infographic,
   },
   mixins: [CommonUtils],
   asyncData(ctx) {
     return {
       articleData: ArticleData.content[0],
-      postData: POSTCONFIG
+      postData: POSTCONFIG,
     }
   },
   data() {
@@ -120,8 +118,8 @@ export default {
         return 'Infographic'
       }
       return null
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss" scoped>

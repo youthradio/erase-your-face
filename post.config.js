@@ -23,9 +23,10 @@ module.exports = {
   docs: [
     {
       name: 'Erase Your Face draft FINAL - backend data',
-      id: '1rRMPbN6Y7y04fmKlHf6lXIPkp1mx9c8FBPxeC3XlZYI'
-    }
+      id: '1rRMPbN6Y7y04fmKlHf6lXIPkp1mx9c8FBPxeC3XlZYI',
+    },
   ],
   dataPath: 'data/data.json',
-  lambdaAppURL: 'https://53fj52a3ud.execute-api.us-west-2.amazonaws.com/latest/'
+  lambdaAppURL:
+    'https://53fj52a3ud.execute-api.us-west-2.amazonaws.com/latest/',
 }

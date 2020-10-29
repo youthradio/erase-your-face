@@ -1,13 +1,13 @@
 export default {
   data() {
     return {
-      _mixingDebouceTimer: null
+      _mixingDebouceTimer: null,
     }
   },
   computed: {
     isLoading() {
       return this.$store.state.isLoading
-    }
+    },
   },
   methods: {
     debouceEvent(event, callback) {
@@ -17,6 +17,6 @@ export default {
       this._mixingDebouceTimer = window.requestAnimationFrame(() =>
         callback(event)
       )
-    }
-  }
+    },
+  },
 }

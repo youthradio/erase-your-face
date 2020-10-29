@@ -51,7 +51,7 @@
                   'roboto-mono db pa1 ph2-ns ba br-pill bw1 b tc f7 f5-ns no-underline b--white',
                   !UIState.isLoadingResult
                     ? 'grow green bg-white shadow-3'
-                    : 'o-50 white bg-inherit'
+                    : 'o-50 white bg-inherit',
                 ]"
                 href="#"
                 @click.prevent="setUIState({ selectedAction: 'submit-test' })"
@@ -103,7 +103,7 @@ export default {
     BrushesComponent,
     FaceButton,
     TrashButton,
-    ResultScreen
+    ResultScreen,
   },
   props: {},
   data() {
@@ -123,7 +123,7 @@ export default {
       currTargetImg: null,
       currTargetImgBlobNew: null,
       lastTimerPointerUp: null,
-      testFetchController: null
+      testFetchController: null,
     }
   },
   computed: {
@@ -159,7 +159,7 @@ export default {
         return this.$store.state.testResult.result.UnmatchedFaces
       }
       return []
-    }
+    },
   },
   watch: {
     async 'UIState.selectedAction'(action) {
@@ -194,7 +194,7 @@ export default {
 
         // this.setUIState({ selectedAction: 'another-face' })
       }
-    }
+    },
   },
   mounted() {
     document.addEventListener('keydown', (event) => {
@@ -333,16 +333,16 @@ export default {
           method: 'POST',
           body: formData,
           header: {
-            'Content-Type': 'multipart/form-data'
+            'Content-Type': 'multipart/form-data',
           },
-          signal: this.testFetchController.signal
+          signal: this.testFetchController.signal,
         }).then((res) => res.json())
         this.setUIState({ isLoadingResult: false })
         this.$store.dispatch('setResultState', {
           loading: false,
           result,
           targetImg: sourceBlob,
-          refImg: targetBlob
+          refImg: targetBlob,
         })
       } catch (error) {
         this.setUIState({ isLoadingResult: false })
@@ -351,7 +351,7 @@ export default {
           result: null,
           targetImg: null,
           refImg: null,
-          error
+          error,
         })
       }
     },
@@ -493,7 +493,7 @@ export default {
         this.setUIState({ isDrawing: true })
         this.lastMouse = {
           x: posx * this.main.canvas.width,
-          y: posy * this.main.canvas.height
+          y: posy * this.main.canvas.height,
         }
         this.currLayerId = nanoid()
         const size = this.UIState.selectedStrokeWeight
@@ -505,7 +505,7 @@ export default {
           color,
           opacity,
           brushMode,
-          points: []
+          points: [],
         })
         this.enableUndoButton = true
 
@@ -516,7 +516,7 @@ export default {
         const currLayer = this.layers.get(this.currLayerId)
         currLayer.points.push([
           posx * this.main.canvas.width,
-          posy * this.main.canvas.height
+          posy * this.main.canvas.height,
         ])
         this.drawingTempLayer.ctx.beginPath()
         this.drawingTempLayer.ctx.moveTo(this.lastMouse.x, this.lastMouse.y)
@@ -547,7 +547,7 @@ export default {
 
         this.lastMouse = {
           x: posx * this.main.canvas.width,
-          y: posy * this.main.canvas.height
+          y: posy * this.main.canvas.height,
         }
       }
     },
@@ -569,8 +569,8 @@ export default {
     async updateTargetImage() {
       this.currTargetImg = await this.loadTargetImage()
       this.drawImage(this.main, this.currTargetImg)
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss" scoped>

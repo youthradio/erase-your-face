@@ -6,7 +6,7 @@
           ><img
             :class="[
               'tool-icon',
-              { toolIconEnabled: selectedTool.name == tool.name }
+              { toolIconEnabled: selectedTool.name == tool.name },
             ]"
             :src="require(`../../assets/${tool.image}`)"
           />
@@ -25,8 +25,8 @@ export default {
       selectedTool: '', // we have the tool's name in our component and could send it to our store
       toolsData: [
         { name: 'Pencil', image: 'icons/pencil.png' },
-        { name: 'Eraser', image: 'icons/strokebrush.png' }
-      ]
+        { name: 'Eraser', image: 'icons/strokebrush.png' },
+      ],
     }
   },
   computed: {},
@@ -36,8 +36,8 @@ export default {
       // would this be to send to the store?
       this.selectedTool = tool
       // this.$store.dispatch("setUIState", { selectedTool: this.selectedTool });
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss" scoped>

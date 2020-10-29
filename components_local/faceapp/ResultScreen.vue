@@ -4,15 +4,11 @@
     <div class="flex mh ph2">
       <div class="w-30 w-40-ns">
         <h3 class="mt0 lh-title f6 f5-ns ma0">
-          <template v-if="isLoadingResult">
-            Loading...
-          </template>
+          <template v-if="isLoadingResult"> Loading... </template>
           <template v-else-if="testResult.result && testResult.result.error">
             No face detected
           </template>
-          <template v-else-if="testResult.result">
-            Face detected
-          </template>
+          <template v-else-if="testResult.result"> Face detected </template>
           <template v-else>
             <span class="gray"> ▮▮▮▮▮▮</span>
           </template>
@@ -34,9 +30,7 @@
       <div class="w-70 w-60-ns flex flex-column justify-between">
         <div>
           <h3 class="lh-title f6 f5-ns ma0">
-            <template v-if="isLoadingResult">
-              Loading...
-            </template>
+            <template v-if="isLoadingResult"> Loading... </template>
             <template v-else-if="testResult.result">
               {{ faceMatches.length > 0 ? faceMatches.length : 'No' }} Matching
               {{ faceMatches.length > 1 ? 'Faces' : 'Face' }}
@@ -46,9 +40,7 @@
             </template>
           </h3>
           <h4 class="mt0 lh-title f7 f6-ns normal">
-            <template v-if="isLoadingResult">
-              Loading...
-            </template>
+            <template v-if="isLoadingResult"> Loading... </template>
             <template v-else-if="faceMatches.length > 0">
               with similarity score
             </template>
@@ -86,8 +78,8 @@ export default {
       isFirstTime: true,
       result: {
         canvas: null,
-        ctx: null
-      }
+        ctx: null,
+      },
     }
   },
   computed: {
@@ -112,7 +104,7 @@ export default {
         }
       }
       return []
-    }
+    },
   },
   watch: {
     async 'UIState.isLoadingResult'() {
@@ -122,7 +114,7 @@ export default {
           await this.drawResult()
         }
       }
-    }
+    },
   },
   mounted() {},
   methods: {
@@ -130,7 +122,7 @@ export default {
       if (this.testResult.result.error) return
       const [refImg, targetImg] = await Promise.all([
         this.loadImage(this.testResult.refImg),
-        this.loadImage(this.testResult.targetImg)
+        this.loadImage(this.testResult.targetImg),
       ])
 
       const refImgBox = this.testResult.result.SourceImageFace.BoundingBox
@@ -186,8 +178,8 @@ export default {
     },
     setUIState(state) {
       this.$store.dispatch('setUIState', { ...state })
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss" scoped>

@@ -19,6 +19,6 @@
 </template>
 <script>
 export default {
-  name: 'FaceButton'
+  name: 'FaceButton',
 }
 </script>

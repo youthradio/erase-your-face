@@ -1,4 +1,5 @@
 {
+  "vetur.format.defaultFormatter.html": "prettier",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },

@@ -5,7 +5,7 @@ const customFetcher = require('./dataFetcher')
 
 const getData = async () => {
   const dataToWrite = {
-    content: []
+    content: [],
   }
   for (const doc of POSTCONFIG.docs) {
     const data = await customFetcher(doc.id)

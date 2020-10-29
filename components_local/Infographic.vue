@@ -3,7 +3,7 @@
     <div
       :class="[
         'w-100 bottom-0 green f7 flex items-center pb1',
-        !click ? 'anima' : ''
+        !click ? 'anima' : '',
       ]"
     >
       <span class="f5"> DRAG FOR MORE</span>
@@ -745,14 +745,14 @@ export default {
     legends: {
       type: Array,
       required: false,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   data() {
     return {
       sb: null,
       click: false,
-      svgDim: { width: '3061px' }
+      svgDim: { width: '3061px' },
     }
   },
   computed: {
@@ -761,20 +761,20 @@ export default {
         return window.innerWidth
       }
       return 600
-    }
+    },
   },
   mounted() {
     this.svgDim = {
-      width: this.$refs.svg.getBoundingClientRect().width + 'px'
+      width: this.$refs.svg.getBoundingClientRect().width + 'px',
     }
     this.sb = new ScrollBooster({
       viewport: this.$refs.view,
       content: this.$refs.content,
       direction: 'horizontal',
-      scrollMode: 'native'
+      scrollMode: 'native',
     })
   },
-  methods: {}
+  methods: {},
 }
 </script>
 

@@ -16,6 +16,6 @@
 </template>
 <script>
 export default {
-  name: 'UndoButton'
+  name: 'UndoButton',
 }
 </script>

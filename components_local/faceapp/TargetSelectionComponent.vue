@@ -7,8 +7,8 @@
         'w33',
         {
           selected:
-            selectedReferenceImg && selectedReferenceImg.name === image.name
-        }
+            selectedReferenceImg && selectedReferenceImg.name === image.name,
+        },
       ]"
     >
       <a tabindex="0" href="#" @click.prevent="setSelection(image)">
@@ -24,7 +24,7 @@ export default {
   data() {
     return {
       selectedReferenceImg: null,
-      pictureBase: []
+      pictureBase: [],
     }
   },
   computed: {
@@ -37,7 +37,7 @@ export default {
     },
     timeline() {
       return this.$store.state.timeline
-    }
+    },
   },
   mounted() {
     this.selectedReferenceImg = this.UIState.selectedReferenceImg
@@ -46,11 +46,11 @@ export default {
     setSelection(image) {
       this.selectedReferenceImg = image
       this.$store.dispatch('setUIState', {
-        selectedReferenceImg: this.selectedReferenceImg
+        selectedReferenceImg: this.selectedReferenceImg,
       })
       this.$store.dispatch('setProgressState', 'canvasDrawing')
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss" scoped>

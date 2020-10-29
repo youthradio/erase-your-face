@@ -25,13 +25,13 @@ marked.setOptions({
   silent: false,
   smartLists: false,
   smartypants: false,
-  xhtml: false
+  xhtml: false,
 })
 
 const renderer = {
   link(href, title, text) {
     return `<a target="_blank" rel="nofollow" href="${href}" class="link green underline underline-hover hover-dark-green">${text}</a>`
-  }
+  },
 }
 
 marked.use({ renderer })
@@ -47,7 +47,7 @@ function markdown2html(data) {
       if (typeof obj[key] === 'string' || obj[key] instanceof String) {
         let configDom = {
           ALLOWED_TAGS: ['a'],
-          KEEP_CONTENT: true
+          KEEP_CONTENT: true,
         }
         if (key === 'text') {
           configDom = {
@@ -62,9 +62,9 @@ function markdown2html(data) {
               'iframe',
               'style',
               'strong',
-              'i'
+              'i',
             ],
-            KEEP_CONTENT: true
+            KEEP_CONTENT: true,
           }
         }
         obj[key] = DOMPurify.sanitize(marked(obj[key]), configDom).trim()

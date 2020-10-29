@@ -13,7 +13,7 @@
           left: `${res.Face.BoundingBox.Left * 100}%`,
           top: `${res.Face.BoundingBox.Top * 100}%`,
           width: `${res.Face.BoundingBox.Width * 100}%`,
-          height: `${res.Face.BoundingBox.Height * 100}%`
+          height: `${res.Face.BoundingBox.Height * 100}%`,
         }"
       ></div>
       <div
@@ -24,7 +24,7 @@
           left: `${res.BoundingBox.Left * 100}%`,
           top: `${res.BoundingBox.Top * 100}%`,
           width: `${res.BoundingBox.Width * 100}%`,
-          height: `${res.BoundingBox.Height * 100}%`
+          height: `${res.BoundingBox.Height * 100}%`,
         }"
       ></div>
     </div>
@@ -41,7 +41,7 @@ export default {
   data() {
     return {
       target: { canvas: null, ctx: null },
-      bShowMasks: false
+      bShowMasks: false,
     }
   },
   computed: {
@@ -62,7 +62,7 @@ export default {
     },
     UIState() {
       return this.$store.state.UIState
-    }
+    },
   },
   mounted() {
     // testing  target canvas with grid of faces
@@ -94,7 +94,7 @@ export default {
       this.setUIState({
         randomImagesIds,
         targetImageId:
-          randomImagesIds[~~(Math.random() * randomImagesIds.length)]
+          randomImagesIds[~~(Math.random() * randomImagesIds.length)],
       })
 
       let i = 0
@@ -135,8 +135,8 @@ export default {
     },
     getCanvas() {
       return this.target.canvas
-    }
-  }
+    },
+  },
 }
 </script>
 

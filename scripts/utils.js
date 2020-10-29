@@ -25,7 +25,7 @@ const utils = {
       .replace(/--+/g, '-')
       .replace(/^-+/, '')
       .replace(/-+$/, '')
-  }
+  },
 }
 
 module.exports = utils

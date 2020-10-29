@@ -10,7 +10,7 @@ export const state = () => ({
     selectedMode: null,
     isLoadingResult: false,
     randomImagesIds: null,
-    targetImageId: null
+    targetImageId: null,
   },
   progress: null,
   toolsData: null,
@@ -19,8 +19,8 @@ export const state = () => ({
     result: null,
     error: null,
     targetImg: null,
-    refImg: null
-  }
+    refImg: null,
+  },
 })
 
 export const actions = {
@@ -36,7 +36,7 @@ export const actions = {
   },
   setResultState({ commit }, newstate) {
     commit('SET_RESULT', newstate)
-  }
+  },
 }
 export const mutations = {
   LOAD_STORE(state) {
@@ -60,5 +60,5 @@ export const mutations = {
   },
   SET_RESULT(state, newstate) {
     state.testResult = Object.assign(state.testResult, newstate)
-  }
+  },
 }

@@ -10,12 +10,12 @@ import Canvas from './faceapp/Canvas.vue'
 export default {
   name: 'FaceApp',
   components: {
-    Canvas
+    Canvas,
   },
   computed: {},
   created() {
     this.$store.dispatch('loadStore')
-  }
+  },
 }
 </script>
 
