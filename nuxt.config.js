@@ -71,7 +71,7 @@ export default {
         href: 'favicon/safari-pinned-tab.svg',
       },
       {
-        rel: 'preload',
+        rel: 'preload stylesheet',
         href:
           'https://interactive.yr.media/yr-media-typography/yr-typography.css',
         as: 'style',

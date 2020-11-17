@@ -96,6 +96,7 @@ async function customFetcher(DOC_ID) {
   // convertedData
 
   // return some JSON Object
+  // eslint-disable-next-line no-console
   console.log(convertedData)
   return convertedData
 }
