@@ -72,8 +72,7 @@ export default {
       },
       {
         rel: 'preload stylesheet',
-        href:
-          'https://interactive.yr.media/yr-media-typography/yr-typography.css',
+        href: 'https://interactive.yr.media/yr-media-typography/yr-typography.css',
         as: 'style',
         onload: `this.onload=null;this.rel='stylesheet'`,
       },

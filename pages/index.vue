@@ -1,7 +1,6 @@
 <template>
   <div>
     <HeaderContainer header-type="video" />
-
     <main class="mw8 center ph3 mt4 relative">
       <div class="absolute-ns h-100 top-0 right-1">
         <ShareContainer

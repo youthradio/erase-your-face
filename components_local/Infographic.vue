@@ -724,7 +724,16 @@
               <template v-for="legend in legends">
                 <div
                   :key="legend"
-                  class="bg-light-green lh-title f6-ns f7 measure-narrow flex items-center items-center pa2"
+                  class="
+                    bg-light-green
+                    lh-title
+                    f6-ns
+                    f7
+                    measure-narrow
+                    flex
+                    items-center items-center
+                    pa2
+                  "
                 >
                   {{ legend }}
                 </div>

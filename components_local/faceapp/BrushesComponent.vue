@@ -92,7 +92,7 @@
           step="0.01"
         />
       </div>
-      <span class="db f7 tc pv3-ns pa0 ma0">OPACITY</span>
+      <span class="db f7 tc pv3-ns pa0 ma0 noselect">OPACITY</span>
     </div>
     <!-- <a class="ma1" href="#">
             <svg
@@ -239,7 +239,7 @@ export default {
   white-space: nowrap;
   display: inline-block;
   overflow: visible;
-  // max-height: 5rem;
+  max-height: 4rem;
 }
 .range {
   display: block;
@@ -257,5 +257,55 @@ export default {
 
 .small {
   font-size: 0.5rem;
+}
+
+@import '~@/assets/css/variables';
+*:focus {
+  outline-width: 1;
+}
+.svg {
+  box-sizing: border-box;
+}
+.stroke {
+  paint-order: stroke;
+  stroke: white;
+  stroke-width: 15px;
+}
+.max-width {
+  max-width: 1rem;
+}
+@media #{$breakpoint-not-small} {
+  .max-width {
+    max-width: 2rem;
+  }
+}
+@media screen and (min-width: 321px) {
+  .max-width {
+    max-width: 1.2rem;
+  }
+  .baseline-xs {
+    align-items: center !important;
+  }
+  .vertical {
+    writing-mode: vertical-lr;
+    transform: rotate(180deg);
+    white-space: nowrap;
+    display: inline-block;
+    overflow: visible;
+    // max-height: 5rem;
+  }
+  .range {
+    display: block;
+    position: relative;
+    writing-mode: bt-lr;
+    -webkit-appearance: slider-vertical;
+    transform: rotate(180deg);
+    width: 2px;
+    -webkit-width: 0px;
+    height: 100%;
+  }
+  .text-order {
+    order: 0;
+  }
 }
 </style>

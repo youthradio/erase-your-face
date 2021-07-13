@@ -11,12 +11,9 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-      - name: Checkout submodules
-        uses: actions/checkout@v2
         with:
-          repository: youthradio/base-components
+          submodules: recursive
           token: ${{ secrets.GH_PAT_READ_WRITE }}
-          path: components
 
       - name: Setup Node
         uses: actions/setup-node@v2-beta

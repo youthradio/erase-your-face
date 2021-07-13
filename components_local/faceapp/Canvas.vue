@@ -6,18 +6,52 @@
         <div class="relative mw5 mw6-ns">
           <div class="relative">
             <div
-              class="f7 f5-ns roboto-mono ttu absolute top-0 w-100 tc white lh-title tracked pointer-events-none z-1 mt1 mt3-ns"
+              class="
+                f7
+                f5-ns
+                roboto-mono
+                ttu
+                absolute
+                top-0
+                w-100
+                tc
+                white
+                lh-title
+                tracked
+                pointer-events-none
+                z-1
+                mt1
+                mt3-ns
+              "
             >
               Draw Over Me
             </div>
             <div
-              class="flex flex-column items-center absolute top-0 left-0 z-1 pa1 pa3-ns"
+              class="
+                flex flex-column
+                items-center
+                absolute
+                top-0
+                left-0
+                z-1
+                pa1
+                pa3-ns
+              "
               :style="{ pointerEvents: isDrawing ? 'none' : 'inherit' }"
             >
               <BrushesComponent :enable-undo-button="enableUndoButton" />
             </div>
             <div
-              class="absolute top-0 right-0 z-1 pa1 pa3-ns flex flex-column items-center"
+              class="
+                absolute
+                top-0
+                right-0
+                z-1
+                pa1
+                pa3-ns
+                flex flex-column
+                items-center
+              "
               :style="{ opacity: UIState.isLoadingResult ? '0.5' : '1' }"
             >
               <a
@@ -233,7 +267,8 @@ export default {
 
       //  canvas for layer, rollback undo
       this.layer.canvas = document.createElement('canvas')
-      this.layer.canvas.width = this.layer.canvas.height = this.main.canvas.width
+      this.layer.canvas.width = this.layer.canvas.height =
+        this.main.canvas.width
       this.layer.ctx = this.layer.canvas.getContext('2d')
       this.layer.ctx.lineWidth = 16
       this.layer.ctx.lineJoin = this.layer.ctx.lineCap = 'round'
@@ -242,13 +277,15 @@ export default {
 
       // drawing canvas overlaying main canvas
       this.drawingLayer.canvas = this.$refs.drawinglayer
-      this.drawingLayer.canvas.width = this.drawingLayer.canvas.height = this.main.canvas.width
+      this.drawingLayer.canvas.width = this.drawingLayer.canvas.height =
+        this.main.canvas.width
       this.drawingLayer.ctx = this.drawingLayer.canvas.getContext('2d')
       this.drawingLayer.ctx.lineWidth = 16
       this.drawingLayer.ctx.lineJoin = this.drawingLayer.ctx.lineCap = 'round'
 
       this.drawingTempLayer.canvas = document.createElement('canvas')
-      this.drawingTempLayer.canvas.width = this.drawingTempLayer.canvas.height = this.main.canvas.width
+      this.drawingTempLayer.canvas.width = this.drawingTempLayer.canvas.height =
+        this.main.canvas.width
       this.drawingTempLayer.ctx = this.drawingTempLayer.canvas.getContext('2d')
       this.drawingTempLayer.ctx.lineWidth = 16
       this.drawingTempLayer.ctx.lineJoin = this.drawingTempLayer.ctx.lineCap =
